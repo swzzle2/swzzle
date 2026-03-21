@@ -107,11 +107,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-xs font-mono text-gray-600 uppercase tracking-widest">Scroll</span>
-            <div className="w-px h-6 bg-gradient-to-b from-purple-500 to-transparent" />
-          </div>
         </section>
 
         <hr className="neon-hr" />
