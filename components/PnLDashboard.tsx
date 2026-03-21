@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 
-interface PublicSummary {
-  id?: number;
-  total_pnl?: number;
-  daily_pnl?: number;
-  weekly_pnl?: number;
-  win_rate?: number;
-  total_trades?: number;
-  active_positions?: number;
-  best_trade?: number;
-  worst_trade?: number;
+interface Summary {
+  total_pnl: number;
+  daily_pnl: number;
+  weekly_pnl: number;
+  win_rate: number;
+  total_trades: number;
+  active_positions: number;
+  best_trade: number;
+  worst_trade: number;
+  current_value: number;
+  starting_value: number;
+  started_at?: string;
   updated_at?: string;
-  [key: string]: unknown;
 }
 
 function fmt(val?: number) {
@@ -36,11 +36,11 @@ function StatCard({
   suffix?: string;
 }) {
   const colorClass = {
-    cyan: "neon-text-cyan",
+    cyan:   "neon-text-cyan",
     purple: "neon-text-purple",
-    pink: "neon-text-pink",
-    green: "neon-text-green",
-    red: "text-red-400",
+    pink:   "neon-text-pink",
+    green:  "neon-text-green",
+    red:    "text-red-400",
   }[color];
 
   return (
@@ -48,8 +48,10 @@ function StatCard({
       <span className="text-[10px] uppercase tracking-wide text-gray-500 font-mono leading-tight truncate">
         {label}
       </span>
-      <span className={`font-black font-mono leading-tight ${colorClass}`}
-        style={{ fontSize: "clamp(14px, 4vw, 26px)" }}>
+      <span
+        className={`font-black font-mono leading-tight ${colorClass}`}
+        style={{ fontSize: "clamp(14px, 4vw, 26px)" }}
+      >
         {prefix}{fmt(value)}{suffix}
       </span>
     </div>
@@ -57,18 +59,16 @@ function StatCard({
 }
 
 export default function PnLDashboard() {
-  const [data, setData] = useState<PublicSummary | null>(null);
+  const [data, setData] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
-    const { data: rows } = await supabase
-      .from("public_summary")
-      .select("*")
-      .order("id", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (rows) setData(rows);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/public-summary", { cache: "no-store" });
+      if (res.ok) setData(await res.json());
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -97,6 +97,11 @@ export default function PnLDashboard() {
         <span className="text-xs font-mono text-gray-400 uppercase tracking-wide">
           Live — 15s refresh
         </span>
+        {data?.started_at && (
+          <span className="text-xs font-mono text-gray-600">
+            baseline {new Date(data.started_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+          </span>
+        )}
         {data?.updated_at && (
           <span className="text-xs font-mono text-gray-600 ml-auto">
             {new Date(data.updated_at).toLocaleTimeString()}
