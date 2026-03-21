@@ -35,7 +35,7 @@ export default function PortfolioWidget() {
 
   const load = async () => {
     try {
-      const res = await fetch("/api/portfolio");
+      const res = await fetch("/api/portfolio", { cache: "no-store" });
       const json = await res.json();
       setData(json);
     } catch {
