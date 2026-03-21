@@ -2,6 +2,7 @@ import NeonBackground from "@/components/NeonBackground";
 import PnLDashboard from "@/components/PnLDashboard";
 import TradesFeed from "@/components/TradesFeed";
 import ReportsFeed from "@/components/ReportsFeed";
+import PortfolioWidget from "@/components/PortfolioWidget";
 import Link from "next/link";
 
 export default function Home() {
@@ -112,6 +113,11 @@ export default function Home() {
             <div className="w-px h-6 bg-gradient-to-b from-purple-500 to-transparent" />
           </div>
         </section>
+
+        <hr className="neon-hr" />
+
+        {/* PORTFOLIO */}
+        <PortfolioWidget />
 
         <hr className="neon-hr" />
 
