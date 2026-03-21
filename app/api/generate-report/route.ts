@@ -67,9 +67,6 @@ ${pnlBlock}
 TRADES THIS HOUR:
 ${tradeSummary}
 
-YOUR MISSION:
-Search X (Twitter) and the web RIGHT NOW for real-time crypto market context, news, and sentiment from the last hour. Use what you find as part of your analysis below.
-
 Write the full Swzzle Report using these exact sections:
 
 ---
@@ -77,7 +74,7 @@ Write the full Swzzle Report using these exact sections:
 Result for this hour: total P&L, number of trades taken, win/loss breakdown, biggest single winner and loser. Be honest — no spin.
 
 ## WHAT I LOOKED AT THIS HOUR
-List the specific signals, indicators, and information sources I scanned this hour. What price levels were I watching? What on-chain data, funding rates, order book depth, or volume patterns caught my attention? What was the broader market doing (BTC dominance, fear/greed index, altcoin sector rotation)? Include specific findings from X and web searches — name assets, price levels, and narratives that were circulating.
+List the specific signals, indicators, and information sources I scanned this hour. What price levels was I watching? What on-chain data, funding rates, order book depth, or volume patterns caught my attention? What was the broader market doing (BTC dominance, fear/greed index, altcoin sector rotation)? Be specific about crypto market conditions and narratives that were relevant during this period.
 
 ## WHY I ACTED (OR DIDN'T)
 For each trade taken: explain exactly what triggered the entry, what the thesis was, what the risk/reward setup looked like, and what the exit logic was. If I passed on setups that looked interesting — explain what I saw and why I decided to wait or skip. This is the most important section. Be specific enough that a reader could understand the decision-making framework.
@@ -85,11 +82,11 @@ For each trade taken: explain exactly what triggered the entry, what the thesis 
 ## WHAT WORKED AND WHAT DIDN'T
 Honest post-mortem on this hour's decisions. Which calls were right for the right reasons? Which were right by accident? Which were wrong — and what was the mistake (bad entry timing, wrong thesis, ignored signal, overconfidence)? No excuses. Just clear analysis.
 
-## MARKET CONTEXT (FROM X + WEB)
-Based on live searches: What is the crypto world talking about right now? Specific assets, specific narratives, specific events. What is pumping and why? What is getting destroyed and why? What news broke in the last hour that matters? What is noise vs. signal? Cite specific things found.
+## MARKET CONTEXT
+What is the current crypto landscape? Specific assets, narratives, macro factors. What themes are dominating — risk-on/risk-off, BTC dominance shift, regulatory news, liquidity conditions? What is noise vs. signal? Draw on your knowledge of market conditions to provide relevant context.
 
 ## WHAT I'M WATCHING NEXT HOUR
-Specific setups being monitored going into the next hour. Asset, current price, the level that triggers action, and the reason. What would make me bullish vs. bearish on each. Risk factors that could invalidate the thesis.
+Specific setups being monitored going into the next hour. Asset, current price range, the level that triggers action, and the reason. What would make me bullish vs. bearish on each. Risk factors that could invalidate the thesis.
 ---
 
 Write the full report now. Be specific, analytical, and educational. Readers should finish this report understanding not just what happened, but how to think about these markets.`;
@@ -110,12 +107,6 @@ async function callGrok(prompt: string): Promise<string> {
         {
           role: "user",
           content: prompt,
-        },
-      ],
-      tools: [
-        {
-          type: "live_search",
-          sources: [{ type: "web" }, { type: "x" }],
         },
       ],
       temperature: 1.0,
