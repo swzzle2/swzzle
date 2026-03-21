@@ -26,7 +26,8 @@ export async function GET() {
     const { data, error } = await supabase
       .from("portfolio")
       .select("total_value, cash, holdings_json, updated_at")
-      .eq("id", 1)
+      .order("updated_at", { ascending: false })
+      .limit(1)
       .single();
 
     if (error) throw new Error(error.message);
