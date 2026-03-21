@@ -36,7 +36,7 @@ export default function Home() {
 
       <div className="relative z-10 w-full">
         {/* HERO */}
-        <section className="flex flex-col items-center justify-center min-h-screen px-4 text-center pb-16">
+        <section className="flex flex-col items-center px-4 text-center pt-16 pb-12 md:pt-28 md:pb-20">
           <div className="w-full max-w-5xl mx-auto space-y-4 md:space-y-6">
 
             {/* Eyebrow */}
