@@ -106,15 +106,25 @@ export default function PortfolioWidget() {
           </p>
         </div>
         <div className="flex flex-col items-start md:items-end gap-1">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
-            <span className="text-xs font-mono text-gray-500 uppercase tracking-wider">Live</span>
-          </div>
-          {data.updatedAt && (
-            <span className="text-[10px] font-mono text-gray-700">
-              Updated {new Date(data.updatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-            </span>
-          )}
+          {(() => {
+            const ageMs = data.updatedAt ? Date.now() - new Date(data.updatedAt).getTime() : Infinity;
+            const stale = ageMs > 3 * 60 * 1000; // >3 min = stale
+            return (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${stale ? "bg-red-500" : "bg-green-400 animate-pulse"}`} />
+                  <span className={`text-xs font-mono uppercase tracking-wider ${stale ? "text-red-400" : "text-gray-500"}`}>
+                    {stale ? "Poller offline" : "Live"}
+                  </span>
+                </div>
+                {data.updatedAt && (
+                  <span className="text-[10px] font-mono text-gray-700">
+                    Updated {new Date(data.updatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                  </span>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
 
