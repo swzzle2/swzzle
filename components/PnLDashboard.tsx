@@ -49,9 +49,9 @@ function StatCard({
       : value;
 
   return (
-    <div className="neon-card p-5 flex flex-col gap-2">
-      <span className="text-xs uppercase tracking-widest text-gray-500 font-mono">{label}</span>
-      <span className={`text-2xl md:text-3xl font-black font-mono ${colorMap[color]}`}>
+    <div className="neon-card p-3 md:p-5 flex flex-col gap-1 md:gap-2">
+      <span className="text-xs uppercase tracking-wide md:tracking-widest text-gray-500 font-mono leading-tight">{label}</span>
+      <span className={`text-lg md:text-2xl lg:text-3xl font-black font-mono break-all ${colorMap[color]}`}>
         {prefix}{formatted}{suffix}
       </span>
     </div>
@@ -84,74 +84,36 @@ export default function PnLDashboard() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {[...Array(8)].map((_, i) => (
-          <div key={i} className="neon-card p-5 animate-pulse h-24" />
+          <div key={i} className="neon-card p-3 md:p-5 animate-pulse h-20 md:h-24" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 mb-2">
+    <div className="space-y-3 md:space-y-4">
+      <div className="flex items-center gap-2 md:gap-3 mb-2 flex-wrap">
         <span className="status-dot online" />
-        <span className="text-xs font-mono text-gray-400 uppercase tracking-widest">
+        <span className="text-xs font-mono text-gray-400 uppercase tracking-wide">
           Live P&amp;L — updates every 15s
         </span>
         {data?.updated_at && (
           <span className="text-xs font-mono text-gray-600 ml-auto">
-            Last: {new Date(data.updated_at).toLocaleTimeString()}
+            {new Date(data.updated_at).toLocaleTimeString()}
           </span>
         )}
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          label="Total P&L"
-          value={data?.total_pnl}
-          color={pnlColor(data?.total_pnl)}
-          prefix="$"
-        />
-        <StatCard
-          label="Daily P&L"
-          value={data?.daily_pnl}
-          color={pnlColor(data?.daily_pnl)}
-          prefix="$"
-        />
-        <StatCard
-          label="Weekly P&L"
-          value={data?.weekly_pnl}
-          color={pnlColor(data?.weekly_pnl)}
-          prefix="$"
-        />
-        <StatCard
-          label="Win Rate"
-          value={data?.win_rate}
-          color="purple"
-          suffix="%"
-        />
-        <StatCard
-          label="Total Trades"
-          value={data?.total_trades}
-          color="cyan"
-        />
-        <StatCard
-          label="Open Positions"
-          value={data?.active_positions}
-          color="pink"
-        />
-        <StatCard
-          label="Best Trade"
-          value={data?.best_trade}
-          color="green"
-          prefix="$"
-        />
-        <StatCard
-          label="Worst Trade"
-          value={data?.worst_trade}
-          color="red"
-          prefix="$"
-        />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <StatCard label="Total P&L" value={data?.total_pnl} color={pnlColor(data?.total_pnl)} prefix="$" />
+        <StatCard label="Daily P&L" value={data?.daily_pnl} color={pnlColor(data?.daily_pnl)} prefix="$" />
+        <StatCard label="Weekly P&L" value={data?.weekly_pnl} color={pnlColor(data?.weekly_pnl)} prefix="$" />
+        <StatCard label="Win Rate" value={data?.win_rate} color="purple" suffix="%" />
+        <StatCard label="Total Trades" value={data?.total_trades} color="cyan" />
+        <StatCard label="Open Positions" value={data?.active_positions} color="pink" />
+        <StatCard label="Best Trade" value={data?.best_trade} color="green" prefix="$" />
+        <StatCard label="Worst Trade" value={data?.worst_trade} color="red" prefix="$" />
       </div>
     </div>
   );

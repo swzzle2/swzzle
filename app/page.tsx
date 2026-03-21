@@ -55,12 +55,12 @@ export default function Home() {
         <section className="flex flex-col items-center justify-center min-h-screen px-4 text-center pb-20">
           <div className="space-y-6 max-w-5xl mx-auto">
             {/* Eyebrow */}
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-purple-500" />
-              <span className="text-xs font-mono uppercase tracking-[0.3em] text-purple-400">
+            <div className="flex items-center justify-center gap-2 md:gap-3">
+              <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent to-purple-500 flex-shrink-0" />
+              <span className="text-xs font-mono uppercase tracking-[0.1em] md:tracking-[0.3em] text-purple-400 text-center">
                 AI-Powered Crypto Intelligence
               </span>
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-purple-500" />
+              <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent to-purple-500 flex-shrink-0" />
             </div>
 
             {/* Main title */}
@@ -131,7 +131,7 @@ export default function Home() {
         <hr className="neon-hr" />
 
         {/* P&L DASHBOARD */}
-        <section className="max-w-6xl mx-auto px-4 py-16">
+        <section className="max-w-6xl mx-auto px-4 py-10 md:py-16">
           <div className="mb-8">
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-gray-500 mb-2">
               Performance Metrics
@@ -146,7 +146,7 @@ export default function Home() {
         <hr className="neon-hr" />
 
         {/* TRADES FEED */}
-        <section className="max-w-6xl mx-auto px-4 py-16">
+        <section className="max-w-6xl mx-auto px-4 py-10 md:py-16">
           <div className="mb-8">
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-gray-500 mb-2">
               Real-Time Execution
@@ -162,7 +162,7 @@ export default function Home() {
         <hr className="neon-hr" />
 
         {/* REPORTS */}
-        <section className="max-w-6xl mx-auto px-4 py-16">
+        <section className="max-w-6xl mx-auto px-4 py-10 md:py-16">
           <div className="mb-8">
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-gray-500 mb-2">
               Market Intelligence

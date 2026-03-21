@@ -89,7 +89,7 @@ export default function HQPage() {
             </Link>
           </div>
 
-          <div className="neon-card p-8 space-y-8">
+          <div className="neon-card p-5 md:p-8 space-y-6 md:space-y-8">
             {/* Header */}
             <div className="text-center space-y-3">
               <div

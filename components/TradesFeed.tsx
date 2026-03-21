@@ -63,15 +63,15 @@ export default function TradesFeed({ limit = 20 }: { limit?: number }) {
   return (
     <div className="neon-card overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm font-mono">
+        <table className="w-full font-mono" style={{ minWidth: "340px" }}>
           <thead>
             <tr className="border-b border-purple-900/40">
-              <th className="text-left py-3 px-4 text-gray-500 uppercase tracking-wider text-xs">Symbol</th>
-              <th className="text-left py-3 px-4 text-gray-500 uppercase tracking-wider text-xs">Side</th>
-              <th className="text-right py-3 px-4 text-gray-500 uppercase tracking-wider text-xs">Price</th>
-              <th className="text-right py-3 px-4 text-gray-500 uppercase tracking-wider text-xs">Amount</th>
-              <th className="text-right py-3 px-4 text-gray-500 uppercase tracking-wider text-xs">P&L</th>
-              <th className="text-right py-3 px-4 text-gray-500 uppercase tracking-wider text-xs hidden md:table-cell">Time</th>
+              <th className="text-left py-2 px-3 md:py-3 md:px-4 text-gray-500 uppercase tracking-wider text-xs">Symbol</th>
+              <th className="text-left py-2 px-3 md:py-3 md:px-4 text-gray-500 uppercase tracking-wider text-xs">Side</th>
+              <th className="text-right py-2 px-3 md:py-3 md:px-4 text-gray-500 uppercase tracking-wider text-xs">Price</th>
+              <th className="text-right py-2 px-3 md:py-3 md:px-4 text-gray-500 uppercase tracking-wider text-xs hidden sm:table-cell">Amount</th>
+              <th className="text-right py-2 px-3 md:py-3 md:px-4 text-gray-500 uppercase tracking-wider text-xs">P&L</th>
+              <th className="text-right py-2 px-3 md:py-3 md:px-4 text-gray-500 uppercase tracking-wider text-xs hidden md:table-cell">Time</th>
             </tr>
           </thead>
           <tbody>
@@ -80,30 +80,30 @@ export default function TradesFeed({ limit = 20 }: { limit?: number }) {
               const pnl = trade.pnl;
               return (
                 <tr key={trade.id} className="trade-row">
-                  <td className="py-3 px-4">
+                  <td className="py-2 px-3 md:py-3 md:px-4 text-xs md:text-sm">
                     <span className="neon-text-cyan font-bold">{trade.symbol || "—"}</span>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-2 px-3 md:py-3 md:px-4">
                     <span className={isBuy ? "badge badge-buy" : "badge badge-sell"}>
                       {trade.side || "—"}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-right text-gray-300">
+                  <td className="py-2 px-3 md:py-3 md:px-4 text-right text-gray-300 text-xs md:text-sm">
                     {trade.price != null
-                      ? `$${Number(trade.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 6 })}`
+                      ? `$${Number(trade.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`
                       : "—"}
                   </td>
-                  <td className="py-3 px-4 text-right text-gray-300">
+                  <td className="py-2 px-3 md:py-3 md:px-4 text-right text-gray-300 text-xs md:text-sm hidden sm:table-cell">
                     {trade.amount != null
                       ? Number(trade.amount).toLocaleString("en-US", { maximumFractionDigits: 4 })
                       : "—"}
                   </td>
-                  <td className={`py-3 px-4 text-right font-bold ${pnl == null ? "text-gray-500" : pnl >= 0 ? "profit" : "loss"}`}>
+                  <td className={`py-2 px-3 md:py-3 md:px-4 text-right font-bold text-xs md:text-sm ${pnl == null ? "text-gray-500" : pnl >= 0 ? "profit" : "loss"}`}>
                     {pnl == null
                       ? "—"
                       : `${pnl >= 0 ? "+" : ""}$${Number(pnl).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   </td>
-                  <td className="py-3 px-4 text-right text-gray-600 hidden md:table-cell">
+                  <td className="py-2 px-3 md:py-3 md:px-4 text-right text-gray-600 text-xs hidden md:table-cell">
                     {trade.created_at
                       ? new Date(trade.created_at).toLocaleTimeString()
                       : "—"}
