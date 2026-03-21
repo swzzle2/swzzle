@@ -145,7 +145,6 @@ async function saveReport(content: string): Promise<void> {
     title,
     content,
     summary,
-    period: "hourly",
     created_at: new Date().toISOString(),
   });
 
