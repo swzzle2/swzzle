@@ -13,7 +13,7 @@ export default function Home() {
       }}
     >
       <NeonBackground />
-      <div className="scanline" />
+
 
       {/* Ambient glow orbs */}
       <div
