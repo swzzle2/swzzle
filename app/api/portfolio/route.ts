@@ -1,25 +1,28 @@
 import { NextResponse } from "next/server";
 import nacl from "tweetnacl";
-import { decodeBase64, encodeBase64 } from "tweetnacl-util";
 
 const API_KEY     = "rh-api-0096f7f6-02ca-4c80-86f7-e3f9eb610f16";
 const PRIVATE_KEY = "Z6BvHtBJRsqga4SqXlo9FZCfhMLlbkrUUWBPHCY6YVo=";
 const BASE_URL    = "https://trading.robinhood.com";
 
-// Build signing key pair once from the 32-byte seed
-const _seed    = decodeBase64(PRIVATE_KEY);           // 32 bytes
-const _keyPair = nacl.sign.keyPair.fromSeed(_seed);   // { publicKey, secretKey }
+// Decode raw 32-byte seed and build keypair once — mirrors Python:
+//   nacl.signing.SigningKey(base64.b64decode(PRIVATE_KEY_B64))
+const _seed    = Buffer.from(PRIVATE_KEY, "base64");        // 32 bytes
+const _keyPair = nacl.sign.keyPair.fromSeed(_seed);
 
 function buildHeaders(method: string, path: string, body = ""): Record<string, string> {
+  // timestamp mirrors Python: str(int(datetime.now(utc).timestamp()))
   const timestamp = String(Math.floor(Date.now() / 1000));
-  // Sign: API_KEY + timestamp + path (no query string) + METHOD + body
-  const message   = `${API_KEY}${timestamp}${path}${method.toUpperCase()}${body}`;
-  const msgBytes  = new TextEncoder().encode(message);
-  const sigBytes  = nacl.sign.detached(msgBytes, _keyPair.secretKey);
+  // message mirrors Python: f"{API_KEY}{timestamp}{path}{method}{body}"
+  // NOTE: method is passed exactly as-is (Python passes "GET"/"POST" uppercase)
+  const message   = `${API_KEY}${timestamp}${path}${method}${body}`;
+  const sigBytes  = nacl.sign.detached(Buffer.from(message), _keyPair.secretKey);
+  // signature mirrors Python: base64.b64encode(signed.signature).decode("utf-8")
+  const signature = Buffer.from(sigBytes).toString("base64");
   return {
     "x-api-key":    API_KEY,
     "x-timestamp":  timestamp,
-    "x-signature":  encodeBase64(sigBytes),
+    "x-signature":  signature,
     "Content-Type": "application/json; charset=utf-8",
   };
 }
