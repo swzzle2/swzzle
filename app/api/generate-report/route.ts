@@ -112,14 +112,10 @@ async function callGrok(prompt: string): Promise<string> {
           content: prompt,
         },
       ],
-      search_parameters: {
-        mode: "on",
-        return_citations: true,
-        sources: [
-          { type: "x" },
-          { type: "web" },
-        ],
-      },
+      tools: [
+        { type: "web_search" },
+        { type: "x_search" },
+      ],
       temperature: 1.0,
       max_tokens: 2000,
     }),
