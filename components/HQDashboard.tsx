@@ -5,9 +5,10 @@ import { supabase } from "@/lib/supabase";
 import TradesFeed from "@/components/TradesFeed";
 import PnLDashboard from "@/components/PnLDashboard";
 import ReportsFeed from "@/components/ReportsFeed";
+import ActivityFeed from "@/components/ActivityFeed";
 import Link from "next/link";
 
-type Tab = "overview" | "trades" | "reports" | "command";
+type Tab = "overview" | "trades" | "reports" | "activity" | "command";
 
 export default function HQDashboard() {
   const [tab, setTab] = useState<Tab>("overview");
@@ -66,10 +67,11 @@ export default function HQDashboard() {
   };
 
   const tabs: { id: Tab; label: string; short: string }[] = [
-    { id: "overview", label: "Overview", short: "Home" },
-    { id: "trades", label: "All Trades", short: "Trades" },
-    { id: "reports", label: "Reports", short: "Reports" },
-    { id: "command", label: "Command", short: "CMD" },
+    { id: "overview",  label: "Overview",  short: "Home"     },
+    { id: "trades",    label: "All Trades", short: "Trades"  },
+    { id: "reports",   label: "Reports",   short: "Reports"  },
+    { id: "activity",  label: "Activity",  short: "Activity" },
+    { id: "command",   label: "Command",   short: "CMD"      },
   ];
 
   return (
@@ -189,6 +191,19 @@ export default function HQDashboard() {
               Intelligence Reports
             </h2>
             <ReportsFeed />
+          </section>
+        )}
+
+        {tab === "activity" && (
+          <section>
+            <div className="mb-5">
+              <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-1">
+                System Activity
+              </h2>
+              <h3 className="text-xl font-black neon-text-cyan">Live Thread</h3>
+              <p className="text-gray-500 text-xs mt-1">Real-time trail of what Grok, Claude, and the bot are doing</p>
+            </div>
+            <ActivityFeed />
           </section>
         )}
 

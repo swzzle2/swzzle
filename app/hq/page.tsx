@@ -112,13 +112,13 @@ export default function HQPage() {
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <label className="text-xs font-mono text-gray-500 uppercase tracking-widest block">
-                  Operator Email
+                  Username
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="hello@swzzle.com"
+                  placeholder="Username"
                   className="neon-input"
                   required
                   autoComplete="email"
