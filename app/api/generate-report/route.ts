@@ -15,81 +15,47 @@ function getGrokKey() {
   return key;
 }
 
-async function fetchContext() {
-  const supabase = getSupabaseAdmin();
+function buildPrompt(): string {
+  const now = new Date();
+  const etTime = now.toLocaleString("en-US", {
+    timeZone: "America/New_York",
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  return `You are writing THE SWZZLE — a crypto intelligence brief that traders actually want to read. This is published hourly and read by serious crypto traders and degens alike. The tone is sharp, confident, a little savage, and always informative. Think: Bloomberg Terminal meets Crypto Twitter. No fluff. No hedging. No disclaimers.
 
-  const [summaryRes, tradesRes] = await Promise.all([
-    supabase
-      .from("public_summary")
-      .select("*")
-      .order("id", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from("trades")
-      .select("symbol, side, price, amount, pnl, created_at")
-      .gte("created_at", oneHourAgo)
-      .order("created_at", { ascending: false })
-      .limit(50),
-  ]);
+The current time is ${etTime} ET.
 
-  return {
-    summary: summaryRes.data,
-    trades: tradesRes.data ?? [],
-  };
-}
+Write THE SWZZLE brief for this hour. Use your most current knowledge of crypto markets, narratives, and what's circulating on X (Twitter) and in the broader crypto space. Cover what's ACTUALLY happening right now — prices, catalysts, sentiment, drama, opportunity.
 
-function buildPrompt(
-  summary: Record<string, unknown> | null,
-  trades: Array<Record<string, unknown>>
-): string {
-  const tradeSummary =
-    trades.length === 0
-      ? "No trades executed this hour."
-      : trades
-          .map(
-            (t) =>
-              `${t.side?.toString().toUpperCase() ?? "?"} ${t.symbol ?? "?"} @ $${t.price ?? "?"} | size: ${t.amount ?? "?"} | pnl: ${t.pnl != null ? `$${t.pnl}` : "open"}`
-          )
-          .join("\n");
-
-  const pnlBlock = summary
-    ? `Total P&L: $${summary.total_pnl ?? "??"} | Daily: $${summary.daily_pnl ?? "??"} | Win Rate: ${summary.win_rate ?? "??"}% | Total Trades: ${summary.total_trades ?? "??"}`
-    : "P&L data unavailable.";
-
-  return `You are Swzzle — an AI crypto trading system writing your hourly intelligence report. This report is read by people who want to understand HOW and WHY you make decisions, not just what happened. Be analytical, honest, and educational. Explain your thinking clearly so readers can learn from it.
-
-TRADING DATA FROM THIS HOUR:
-${pnlBlock}
-
-TRADES THIS HOUR:
-${tradeSummary}
-
-Write the full Swzzle Report using these exact sections:
+Structure it EXACTLY like this, using these section headers:
 
 ---
-## SCOREBOARD
-Result for this hour: total P&L, number of trades taken, win/loss breakdown, biggest single winner and loser. Be honest — no spin.
+# THE SWZZLE
+### [Day], [Month] [Date] · [Time] ET
 
-## WHAT I LOOKED AT THIS HOUR
-List the specific signals, indicators, and information sources I scanned this hour. What price levels was I watching? What on-chain data, funding rates, order book depth, or volume patterns caught my attention? What was the broader market doing (BTC dominance, fear/greed index, altcoin sector rotation)? Be specific about crypto market conditions and narratives that were relevant during this period.
+## 🔥 WHAT'S MOVING
+The top 3–5 crypto stories RIGHT NOW. For each one: what's happening, why it matters, what the price action looks like, and what traders are saying. Be specific — name the coins, name the price levels, name the catalysts. This is the section people screenshot and share.
 
-## WHY I ACTED (OR DIDN'T)
-For each trade taken: explain exactly what triggered the entry, what the thesis was, what the risk/reward setup looked like, and what the exit logic was. If I passed on setups that looked interesting — explain what I saw and why I decided to wait or skip. This is the most important section. Be specific enough that a reader could understand the decision-making framework.
+## 📊 MARKET PULSE
+One tight paragraph on the overall market structure right now. Is BTC leading or lagging? Is risk appetite on or off? What's the fear/greed reading? Are altcoins seeing rotation? What's BTC dominance doing? Give traders the 10-second market read.
 
-## WHAT WORKED AND WHAT DIDN'T
-Honest post-mortem on this hour's decisions. Which calls were right for the right reasons? Which were right by accident? Which were wrong — and what was the mistake (bad entry timing, wrong thesis, ignored signal, overconfidence)? No excuses. Just clear analysis.
+## 👀 UNDER THE RADAR
+2–3 smaller caps, narratives, or setups that aren't in the headlines but should be. This is where sharp traders find edge. Explain why it's interesting and what to watch.
 
-## MARKET CONTEXT
-What is the current crypto landscape? Specific assets, narratives, macro factors. What themes are dominating — risk-on/risk-off, BTC dominance shift, regulatory news, liquidity conditions? What is noise vs. signal? Draw on your knowledge of market conditions to provide relevant context.
+## ⚡ HOT TAKES
+3–5 punchy, opinionated takes on the current market. These should be the kind of thing you'd tweet and it would get 500 retweets. Provocative, informed, spicy. Not reckless — but not boring either.
 
-## WHAT I'M WATCHING NEXT HOUR
-Specific setups being monitored going into the next hour. Asset, current price range, the level that triggers action, and the reason. What would make me bullish vs. bearish on each. Risk factors that could invalidate the thesis.
+## 📅 WHAT TO WATCH NEXT HOUR
+Specific catalysts, levels, or events in the next 60 minutes that could move markets. Data releases, unlocks, liquidation levels, key price levels being tested. Tell traders exactly what to have their eyes on.
 ---
 
-Write the full report now. Be specific, analytical, and educational. Readers should finish this report understanding not just what happened, but how to think about these markets.`;
+Write it now. Make it so good that a trader who reads it feels like they just got the alpha drop. Be specific, be bold, be right.`;
 }
 
 async function callGrok(prompt: string): Promise<string> {
@@ -103,14 +69,9 @@ async function callGrok(prompt: string): Promise<string> {
     },
     body: JSON.stringify({
       model: "grok-4",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
       temperature: 1.0,
-      max_tokens: 2000,
+      max_tokens: 3000,
     }),
   });
 
@@ -129,13 +90,18 @@ async function saveReport(content: string): Promise<void> {
   const supabase = getSupabaseAdmin();
 
   const now = new Date();
-  const hourStr = now.toLocaleString("en-US", {
+  const etTime = now.toLocaleString("en-US", {
+    timeZone: "America/New_York",
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-    timeZone: "UTC",
   });
-  const title = `Swzzle Report — ${now.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })} ${hourStr} UTC`;
+  const etDate = now.toLocaleDateString("en-US", {
+    timeZone: "America/New_York",
+    month: "short",
+    day: "numeric",
+  });
+  const title = `The Swzzle — ${etDate} ${etTime} ET`;
 
   const { error } = await supabase.from("reports").insert({
     title,
@@ -156,7 +122,6 @@ export async function POST(req: NextRequest) {
 }
 
 async function handler(req: NextRequest) {
-  // Verify Vercel cron secret if present
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
@@ -164,18 +129,17 @@ async function handler(req: NextRequest) {
   }
 
   try {
-    console.log("[generate-report] Fetching trading context...");
-    const { summary, trades } = await fetchContext();
+    console.log("[generate-report] Building prompt...");
+    const prompt = buildPrompt();
 
-    console.log(`[generate-report] Got ${trades.length} trades this hour. Calling Grok...`);
-    const prompt = buildPrompt(summary, trades);
+    console.log("[generate-report] Calling Grok...");
     const reportContent = await callGrok(prompt);
 
-    console.log("[generate-report] Saving report to Supabase...");
+    console.log("[generate-report] Saving report...");
     await saveReport(reportContent);
 
     console.log("[generate-report] Done.");
-    return NextResponse.json({ success: true, tradeCount: trades.length });
+    return NextResponse.json({ success: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[generate-report] Error:", message);

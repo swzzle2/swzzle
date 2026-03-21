@@ -3,6 +3,7 @@ import PnLDashboard from "@/components/PnLDashboard";
 import TradesFeed from "@/components/TradesFeed";
 import ReportsFeed from "@/components/ReportsFeed";
 import PortfolioWidget from "@/components/PortfolioWidget";
+import CryptoPrices from "@/components/CryptoPrices";
 import Link from "next/link";
 
 export default function Home() {
@@ -109,6 +110,9 @@ export default function Home() {
 
         </section>
 
+        {/* CRYPTO PRICES */}
+        <CryptoPrices />
+
         <hr className="neon-hr" />
 
         {/* PORTFOLIO */}
@@ -151,12 +155,12 @@ export default function Home() {
         <section className="w-full max-w-6xl mx-auto px-4 py-8 md:py-16">
           <div className="mb-5 md:mb-8">
             <h2 className="text-xs font-mono uppercase tracking-[0.15em] md:tracking-[0.3em] text-gray-500 mb-1">
-              Market Intelligence
+              Crypto Intelligence
             </h2>
             <h3 className="text-xl md:text-4xl font-black neon-text-pink">
-              Swzzle Reports
+              The Swzzle
             </h3>
-            <p className="text-gray-500 text-xs md:text-sm mt-1">Hourly AI analysis and market insights</p>
+            <p className="text-gray-500 text-xs md:text-sm mt-1">Hourly drops — what&apos;s moving, why it matters, what to watch</p>
           </div>
           <ReportsFeed />
         </section>
