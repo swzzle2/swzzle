@@ -113,7 +113,10 @@ async function callGrok(prompt: string): Promise<string> {
         },
       ],
       tools: [
-        { type: "live_search" },
+        {
+          type: "live_search",
+          sources: [{ type: "web" }, { type: "x" }],
+        },
       ],
       temperature: 1.0,
       max_tokens: 2000,
