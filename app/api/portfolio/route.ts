@@ -1,24 +1,25 @@
 import { NextResponse } from "next/server";
-import { createPrivateKey, sign as nodeCryptoSign } from "crypto";
+import nacl from "tweetnacl";
+import { decodeBase64, encodeBase64 } from "tweetnacl-util";
 
-const API_KEY      = "rh-api-0096f7f6-02ca-4c80-86f7-e3f9eb610f16";
-const PRIVATE_KEY  = "Z6BvHtBJRsqga4SqXlo9FZCfhMLlbkrUUWBPHCY6YVo=";
-const BASE_URL     = "https://trading.robinhood.com";
+const API_KEY     = "rh-api-0096f7f6-02ca-4c80-86f7-e3f9eb610f16";
+const PRIVATE_KEY = "Z6BvHtBJRsqga4SqXlo9FZCfhMLlbkrUUWBPHCY6YVo=";
+const BASE_URL    = "https://trading.robinhood.com";
 
-// Ed25519 PKCS8 DER header — prepend to raw 32-byte seed
-const ED25519_HEADER = Buffer.from("302e020100300506032b657004220420", "hex");
+// Build signing key pair once from the 32-byte seed
+const _seed    = decodeBase64(PRIVATE_KEY);           // 32 bytes
+const _keyPair = nacl.sign.keyPair.fromSeed(_seed);   // { publicKey, secretKey }
 
 function buildHeaders(method: string, path: string, body = ""): Record<string, string> {
-  const timestamp  = String(Math.floor(Date.now() / 1000));
-  const message    = `${API_KEY}${timestamp}${path}${method.toUpperCase()}${body}`;
-  const seed       = Buffer.from(PRIVATE_KEY, "base64");
-  const der        = Buffer.concat([ED25519_HEADER, seed]);
-  const privateKey = createPrivateKey({ key: der, format: "der", type: "pkcs8" });
-  const sigBuf     = nodeCryptoSign(null, Buffer.from(message), privateKey);
+  const timestamp = String(Math.floor(Date.now() / 1000));
+  // Sign: API_KEY + timestamp + path (no query string) + METHOD + body
+  const message   = `${API_KEY}${timestamp}${path}${method.toUpperCase()}${body}`;
+  const msgBytes  = new TextEncoder().encode(message);
+  const sigBytes  = nacl.sign.detached(msgBytes, _keyPair.secretKey);
   return {
     "x-api-key":    API_KEY,
     "x-timestamp":  timestamp,
-    "x-signature":  sigBuf.toString("base64"),
+    "x-signature":  encodeBase64(sigBytes),
     "Content-Type": "application/json; charset=utf-8",
   };
 }
