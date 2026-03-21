@@ -7,67 +7,51 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div
-      className="relative min-h-screen cosmic-grid"
+      className="relative min-h-screen cosmic-grid w-full"
       style={{
         background: "radial-gradient(ellipse at top, #0d0020 0%, #000000 60%, #000814 100%)",
       }}
     >
       <NeonBackground />
 
+      {/* Ambient glow orbs — clipped so they never cause horizontal scroll */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+        <div style={{
+          position: "absolute", top: "-200px", left: "-200px",
+          width: "500px", height: "500px",
+          background: "radial-gradient(circle, rgba(182,0,255,0.1) 0%, transparent 70%)",
+        }} />
+        <div style={{
+          position: "absolute", top: "20%", right: "-150px",
+          width: "400px", height: "400px",
+          background: "radial-gradient(circle, rgba(0,245,255,0.07) 0%, transparent 70%)",
+        }} />
+        <div style={{
+          position: "absolute", bottom: "-100px", left: "30%",
+          width: "350px", height: "350px",
+          background: "radial-gradient(circle, rgba(255,0,153,0.06) 0%, transparent 70%)",
+        }} />
+      </div>
 
-      {/* Ambient glow orbs */}
-      <div
-        className="fixed pointer-events-none"
-        style={{
-          top: "-200px",
-          left: "-200px",
-          width: "600px",
-          height: "600px",
-          background: "radial-gradient(circle, rgba(182,0,255,0.12) 0%, transparent 70%)",
-          zIndex: 0,
-        }}
-      />
-      <div
-        className="fixed pointer-events-none"
-        style={{
-          top: "20%",
-          right: "-150px",
-          width: "500px",
-          height: "500px",
-          background: "radial-gradient(circle, rgba(0,245,255,0.08) 0%, transparent 70%)",
-          zIndex: 0,
-        }}
-      />
-      <div
-        className="fixed pointer-events-none"
-        style={{
-          bottom: "-100px",
-          left: "30%",
-          width: "400px",
-          height: "400px",
-          background: "radial-gradient(circle, rgba(255,0,153,0.07) 0%, transparent 70%)",
-          zIndex: 0,
-        }}
-      />
-
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         {/* HERO */}
-        <section className="flex flex-col items-center justify-center min-h-screen px-4 text-center pb-20">
-          <div className="space-y-6 max-w-5xl mx-auto">
+        <section className="flex flex-col items-center justify-center min-h-screen px-4 text-center pb-16">
+          <div className="w-full max-w-5xl mx-auto space-y-4 md:space-y-6">
+
             {/* Eyebrow */}
-            <div className="flex items-center justify-center gap-2 md:gap-3">
-              <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent to-purple-500 flex-shrink-0" />
-              <span className="text-xs font-mono uppercase tracking-[0.1em] md:tracking-[0.3em] text-purple-400 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <div className="h-px w-6 md:w-12 bg-gradient-to-r from-transparent to-purple-500 flex-shrink-0" />
+              <span className="text-xs font-mono uppercase tracking-[0.08em] md:tracking-[0.25em] text-purple-400">
                 AI-Powered Crypto Intelligence
               </span>
-              <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent to-purple-500 flex-shrink-0" />
+              <div className="h-px w-6 md:w-12 bg-gradient-to-l from-transparent to-purple-500 flex-shrink-0" />
             </div>
 
             {/* Main title */}
-            <div className="glitch w-full">
+            <div className="glitch w-full overflow-hidden">
               <h1
-                className="hero-title font-black leading-none tracking-tight w-full text-center"
-                style={{ fontSize: "clamp(56px, 18vw, 220px)" }}
+                className="hero-title font-black leading-none w-full text-center"
+                style={{ fontSize: "clamp(52px, 17vw, 220px)", letterSpacing: "-0.02em" }}
               >
                 SWZZLE
               </h1>
@@ -75,34 +59,35 @@ export default function Home() {
 
             {/* Tagline */}
             <p
-              className="font-mono font-bold uppercase tracking-[0.15em] text-white/90"
+              className="font-mono font-bold uppercase text-white/90 px-2"
               style={{
-                fontSize: "clamp(14px, 2.5vw, 22px)",
-                textShadow: "0 0 30px rgba(0,245,255,0.5)",
+                fontSize: "clamp(10px, 3vw, 20px)",
+                letterSpacing: "0.06em",
+                textShadow: "0 0 20px rgba(0,245,255,0.4)",
+                lineHeight: 1.4,
               }}
             >
               The World&apos;s Most Savage Crypto Trading AI
             </p>
 
             {/* Sub-tagline */}
-            <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+            <p className="text-gray-400 text-sm md:text-base max-w-md mx-auto leading-relaxed px-2">
               Real-time algorithmic execution. Zero emotion. Pure alpha.
-              Watch the machine print money while you sleep.
             </p>
 
-            {/* Stats ticker */}
+            {/* Ticker */}
             <div
-              className="mt-8 overflow-hidden"
+              className="overflow-hidden w-full"
               style={{
                 borderTop: "1px solid rgba(182,0,255,0.3)",
                 borderBottom: "1px solid rgba(182,0,255,0.3)",
-                padding: "10px 0",
+                padding: "8px 0",
               }}
             >
               <div
                 style={{
                   display: "flex",
-                  gap: "60px",
+                  gap: "48px",
                   animation: "ticker 20s linear infinite",
                   width: "max-content",
                 }}
@@ -122,21 +107,21 @@ export default function Home() {
           </div>
 
           {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
             <span className="text-xs font-mono text-gray-600 uppercase tracking-widest">Scroll</span>
-            <div className="w-px h-8 bg-gradient-to-b from-purple-500 to-transparent" />
+            <div className="w-px h-6 bg-gradient-to-b from-purple-500 to-transparent" />
           </div>
         </section>
 
         <hr className="neon-hr" />
 
         {/* P&L DASHBOARD */}
-        <section className="max-w-6xl mx-auto px-4 py-10 md:py-16">
-          <div className="mb-8">
-            <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-gray-500 mb-2">
+        <section className="w-full max-w-6xl mx-auto px-4 py-8 md:py-16">
+          <div className="mb-5 md:mb-8">
+            <h2 className="text-xs font-mono uppercase tracking-[0.15em] md:tracking-[0.3em] text-gray-500 mb-1">
               Performance Metrics
             </h2>
-            <h3 className="text-2xl md:text-4xl font-black neon-text-purple">
+            <h3 className="text-xl md:text-4xl font-black neon-text-purple">
               Live P&amp;L Dashboard
             </h3>
           </div>
@@ -146,15 +131,15 @@ export default function Home() {
         <hr className="neon-hr" />
 
         {/* TRADES FEED */}
-        <section className="max-w-6xl mx-auto px-4 py-10 md:py-16">
-          <div className="mb-8">
-            <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-gray-500 mb-2">
+        <section className="w-full max-w-6xl mx-auto px-4 py-8 md:py-16">
+          <div className="mb-5 md:mb-8">
+            <h2 className="text-xs font-mono uppercase tracking-[0.15em] md:tracking-[0.3em] text-gray-500 mb-1">
               Real-Time Execution
             </h2>
-            <h3 className="text-2xl md:text-4xl font-black neon-text-cyan">
+            <h3 className="text-xl md:text-4xl font-black neon-text-cyan">
               Live Trade Feed
             </h3>
-            <p className="text-gray-500 text-sm mt-2">Last 20 trades — updates in real-time</p>
+            <p className="text-gray-500 text-xs md:text-sm mt-1">Last 20 trades — updates in real-time</p>
           </div>
           <TradesFeed limit={20} />
         </section>
@@ -162,15 +147,15 @@ export default function Home() {
         <hr className="neon-hr" />
 
         {/* REPORTS */}
-        <section className="max-w-6xl mx-auto px-4 py-10 md:py-16">
-          <div className="mb-8">
-            <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-gray-500 mb-2">
+        <section className="w-full max-w-6xl mx-auto px-4 py-8 md:py-16">
+          <div className="mb-5 md:mb-8">
+            <h2 className="text-xs font-mono uppercase tracking-[0.15em] md:tracking-[0.3em] text-gray-500 mb-1">
               Market Intelligence
             </h2>
-            <h3 className="text-2xl md:text-4xl font-black neon-text-pink">
+            <h3 className="text-xl md:text-4xl font-black neon-text-pink">
               Swzzle Reports
             </h3>
-            <p className="text-gray-500 text-sm mt-2">Hourly AI analysis and market insights</p>
+            <p className="text-gray-500 text-xs md:text-sm mt-1">Hourly AI analysis and market insights</p>
           </div>
           <ReportsFeed />
         </section>
@@ -178,7 +163,7 @@ export default function Home() {
         <hr className="neon-hr" />
 
         {/* FOOTER */}
-        <footer className="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <footer className="w-full max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span
               className="font-black text-xl"
@@ -192,7 +177,7 @@ export default function Home() {
             </span>
             <span className="text-gray-600 text-xs font-mono">© 2025</span>
           </div>
-          <p className="text-gray-600 text-xs font-mono text-center">
+          <p className="text-gray-600 text-xs font-mono text-center px-4">
             Not financial advice. Past performance does not guarantee future results.
           </p>
           <Link
