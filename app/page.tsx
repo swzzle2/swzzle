@@ -64,10 +64,10 @@ export default function Home() {
             </div>
 
             {/* Main title */}
-            <div className="glitch">
+            <div className="glitch w-full">
               <h1
-                className="hero-title font-black leading-none tracking-tight"
-                style={{ fontSize: "clamp(80px, 18vw, 220px)" }}
+                className="hero-title font-black leading-none tracking-tight w-full text-center"
+                style={{ fontSize: "clamp(56px, 18vw, 220px)" }}
               >
                 SWZZLE
               </h1>

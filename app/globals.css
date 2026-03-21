@@ -27,10 +27,10 @@ body {
 ::-webkit-scrollbar-thumb { background: #b600ff; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #00f5ff; }
 
-.neon-text-purple { color: #b600ff; text-shadow: 0 0 10px #b600ff, 0 0 20px #b600ff, 0 0 40px #b600ff; }
-.neon-text-cyan { color: #00f5ff; text-shadow: 0 0 10px #00f5ff, 0 0 20px #00f5ff, 0 0 40px #00f5ff; }
-.neon-text-pink { color: #ff0099; text-shadow: 0 0 10px #ff0099, 0 0 20px #ff0099, 0 0 40px #ff0099; }
-.neon-text-green { color: #00ff88; text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 40px #00ff88; }
+.neon-text-purple { color: #b600ff; text-shadow: 0 0 8px rgba(182,0,255,0.7), 0 0 20px rgba(182,0,255,0.3); }
+.neon-text-cyan { color: #00f5ff; text-shadow: 0 0 8px rgba(0,245,255,0.7), 0 0 20px rgba(0,245,255,0.3); }
+.neon-text-pink { color: #ff0099; text-shadow: 0 0 8px rgba(255,0,153,0.7), 0 0 20px rgba(255,0,153,0.3); }
+.neon-text-green { color: #00ff88; text-shadow: 0 0 8px rgba(0,255,136,0.7), 0 0 20px rgba(0,255,136,0.3); }
 
 .hero-title {
   background: linear-gradient(135deg, #b600ff 0%, #00f5ff 40%, #ff0099 80%, #b600ff 100%);
@@ -39,7 +39,7 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: gradientShift 4s ease infinite;
-  filter: drop-shadow(0 0 30px rgba(182,0,255,0.8)) drop-shadow(0 0 60px rgba(0,245,255,0.4));
+  filter: drop-shadow(0 0 16px rgba(182,0,255,0.5)) drop-shadow(0 0 32px rgba(0,245,255,0.2));
 }
 
 @keyframes gradientShift {
