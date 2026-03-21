@@ -137,10 +137,6 @@ async function saveReport(content: string): Promise<void> {
   });
   const title = `Swzzle Report — ${now.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })} ${hourStr} UTC`;
 
-  // Extract first paragraph as summary
-  const summaryMatch = content.match(/(?:SCOREBOARD\s*\n+)([\s\S]{20,200}?)(?:\n\n|\n##)/);
-  const summary = summaryMatch?.[1]?.trim().slice(0, 200) ?? content.slice(0, 200).trim();
-
   const { error } = await supabase.from("reports").insert({
     title,
     content,
