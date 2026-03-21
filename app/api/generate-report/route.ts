@@ -144,7 +144,6 @@ async function saveReport(content: string): Promise<void> {
   const { error } = await supabase.from("reports").insert({
     title,
     content,
-    summary,
     created_at: new Date().toISOString(),
   });
 
