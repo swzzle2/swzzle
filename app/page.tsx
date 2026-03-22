@@ -1,9 +1,6 @@
 import NeonBackground from "@/components/NeonBackground";
 import PnLDashboard from "@/components/PnLDashboard";
-import TradesFeed from "@/components/TradesFeed";
-import ReportsFeed from "@/components/ReportsFeed";
 import PortfolioWidget from "@/components/PortfolioWidget";
-import BuySignals from "@/components/BuySignals";
 import Link from "next/link";
 
 export default function Home() {
@@ -112,11 +109,6 @@ export default function Home() {
 
         <hr className="neon-hr" />
 
-        {/* BUY SIGNALS */}
-        <BuySignals />
-
-        <hr className="neon-hr" />
-
         {/* PORTFOLIO */}
         <PortfolioWidget />
 
@@ -133,38 +125,6 @@ export default function Home() {
             </h3>
           </div>
           <PnLDashboard />
-        </section>
-
-        <hr className="neon-hr" />
-
-        {/* TRADES FEED */}
-        <section className="w-full max-w-6xl mx-auto px-4 py-8 md:py-16">
-          <div className="mb-5 md:mb-8">
-            <h2 className="text-xs font-mono uppercase tracking-[0.15em] md:tracking-[0.3em] text-gray-500 mb-1">
-              Real-Time Execution
-            </h2>
-            <h3 className="text-xl md:text-4xl font-black neon-text-cyan">
-              Live Trade Feed
-            </h3>
-            <p className="text-gray-500 text-xs md:text-sm mt-1">Last 20 trades — updates in real-time</p>
-          </div>
-          <TradesFeed limit={20} />
-        </section>
-
-        <hr className="neon-hr" />
-
-        {/* REPORTS */}
-        <section className="w-full max-w-6xl mx-auto px-4 py-8 md:py-16">
-          <div className="mb-5 md:mb-8">
-            <h2 className="text-xs font-mono uppercase tracking-[0.15em] md:tracking-[0.3em] text-gray-500 mb-1">
-              Crypto Intelligence
-            </h2>
-            <h3 className="text-xl md:text-4xl font-black neon-text-pink">
-              The Swzzle
-            </h3>
-            <p className="text-gray-500 text-xs md:text-sm mt-1">Hourly drops — what&apos;s moving, why it matters, what to watch</p>
-          </div>
-          <ReportsFeed />
         </section>
 
         <hr className="neon-hr" />
