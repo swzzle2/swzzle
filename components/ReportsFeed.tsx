@@ -156,15 +156,6 @@ export default function ReportsFeed({ limit = 3 }: { limit?: number }) {
         );
       })}
 
-      {/* Link to archive */}
-      <div className="text-center pt-2">
-        <Link
-          href="/hq"
-          className="text-xs font-mono uppercase tracking-widest text-gray-600 hover:text-purple-400 transition-colors"
-        >
-          View full archive in HQ →
-        </Link>
-      </div>
     </div>
   );
 }
