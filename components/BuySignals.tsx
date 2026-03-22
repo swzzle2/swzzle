@@ -100,7 +100,7 @@ export default function BuySignals() {
                 })}
               </span>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed line-clamp-3">
+            <p className="text-xs text-gray-400 leading-relaxed">
               {sig.reason.replace(/^(BUY|SELL|HOLD)[,.]?\s*/i, "")}
             </p>
           </div>
