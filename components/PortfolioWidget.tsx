@@ -108,7 +108,7 @@ export default function PortfolioWidget() {
         <div className="flex flex-col items-start md:items-end gap-1">
           {(() => {
             const ageMs = data.updatedAt ? Date.now() - new Date(data.updatedAt).getTime() : Infinity;
-            const stale = ageMs > 3 * 60 * 1000; // >3 min = stale
+            const stale = ageMs > 90 * 60 * 1000; // >90 min = stale (poller runs hourly)
             return (
               <>
                 <div className="flex items-center gap-2">
