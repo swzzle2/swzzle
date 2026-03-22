@@ -4,11 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import TradesFeed from "@/components/TradesFeed";
 import PnLDashboard from "@/components/PnLDashboard";
-import ReportsFeed from "@/components/ReportsFeed";
-import ActivityFeed from "@/components/ActivityFeed";
 import Link from "next/link";
 
-type Tab = "overview" | "trades" | "reports" | "activity" | "command";
+type Tab = "overview" | "trades" | "command";
 type LogType = "in" | "out" | "err" | "pending";
 
 interface LogEntry {
@@ -68,7 +66,6 @@ export default function HQDashboard() {
     setCommand("");
 
     try {
-      // Save command to Supabase via API route, get back the row id
       const res = await fetch("/api/command", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,13 +84,11 @@ export default function HQDashboard() {
 
       const cmdId = data.id;
 
-      // Show pending entry while bot processes
       setCmdLog((prev) => [
         ...prev,
         { ts: getTs(), msg: "⟳ Queued — waiting for bot to execute...", type: "pending" },
       ]);
 
-      // Poll every 5s for up to 3 minutes
       let attempts = 0;
       const poll = setInterval(async () => {
         attempts++;
@@ -115,7 +110,6 @@ export default function HQDashboard() {
             });
             setSending(false);
           } else if (attempts >= 120) {
-            // 10-minute timeout
             clearInterval(poll);
             setCmdLog((prev) => {
               const updated = [...prev];
@@ -147,11 +141,9 @@ export default function HQDashboard() {
   };
 
   const tabs: { id: Tab; label: string; short: string }[] = [
-    { id: "overview",  label: "Overview",   short: "Home"     },
-    { id: "trades",    label: "All Trades", short: "Trades"   },
-    { id: "reports",   label: "Reports",    short: "Reports"  },
-    { id: "activity",  label: "Activity",   short: "Activity" },
-    { id: "command",   label: "Command",    short: "CMD"      },
+    { id: "overview", label: "Overview",   short: "Home"   },
+    { id: "trades",   label: "All Trades", short: "Trades" },
+    { id: "command",  label: "Command",    short: "CMD"    },
   ];
 
   return (
@@ -261,29 +253,7 @@ export default function HQDashboard() {
             <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-4">
               All Trades
             </h2>
-            <TradesFeed limit={100} />
-          </section>
-        )}
-
-        {tab === "reports" && (
-          <section>
-            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-4">
-              Intelligence Reports
-            </h2>
-            <ReportsFeed />
-          </section>
-        )}
-
-        {tab === "activity" && (
-          <section>
-            <div className="mb-5">
-              <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-1">
-                System Activity
-              </h2>
-              <h3 className="text-xl font-black neon-text-cyan">Live Thread</h3>
-              <p className="text-gray-500 text-xs mt-1">Real-time trail of what Grok, Claude, and the bot are doing</p>
-            </div>
-            <ActivityFeed />
+            <TradesFeed limit={500} />
           </section>
         )}
 
