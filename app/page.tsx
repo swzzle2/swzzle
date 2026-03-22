@@ -3,7 +3,6 @@ import PnLDashboard from "@/components/PnLDashboard";
 import TradesFeed from "@/components/TradesFeed";
 import ReportsFeed from "@/components/ReportsFeed";
 import PortfolioWidget from "@/components/PortfolioWidget";
-import CryptoPrices from "@/components/CryptoPrices";
 import Link from "next/link";
 
 export default function Home() {
@@ -109,9 +108,6 @@ export default function Home() {
           </div>
 
         </section>
-
-        {/* CRYPTO PRICES */}
-        <CryptoPrices />
 
         <hr className="neon-hr" />
 

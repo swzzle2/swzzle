@@ -46,22 +46,25 @@ export default function HQDashboard() {
     e.preventDefault();
     if (!command.trim()) return;
     setSending(true);
-    const ts = new Date().toLocaleTimeString();
+    const ts = new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true });
     const msg = command.trim();
     setCmdLog((prev) => [...prev, { ts, msg, type: "in" }]);
     setCommand("");
 
     try {
-      const { error } = await supabase
-        .from("commands")
-        .insert({ content: msg, created_at: new Date().toISOString() });
-      if (error) {
-        setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString(), msg: `Error: ${error.message}`, type: "err" }]);
+      const res = await fetch("/api/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: msg }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true }), msg: data.error ?? "Unknown error", type: "err" }]);
       } else {
-        setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString(), msg: "Command received. Swzzle is processing...", type: "out" }]);
+        setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true }), msg: data.reply, type: "out" }]);
       }
     } catch (err) {
-      setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString(), msg: `Failed to send: ${err}`, type: "err" }]);
+      setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true }), msg: `Failed to send: ${err}`, type: "err" }]);
     }
     setSending(false);
   };
