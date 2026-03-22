@@ -1,41 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://odcdhadqufanxqozgwdb.supabase.co";
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY!;
+
+const sbHeaders = {
+  apikey: SUPABASE_KEY,
+  Authorization: `Bearer ${SUPABASE_KEY}`,
+  "Content-Type": "application/json",
+  Prefer: "return=representation",
+};
+
+// POST — save command to Supabase, return { id }
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.GROK_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: "GROK_API_KEY not set" }, { status: 500 });
-
   const { command } = await req.json();
-  if (!command?.trim()) return NextResponse.json({ error: "No command provided" }, { status: 400 });
-
-  const response = await fetch("https://api.x.ai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "grok-4",
-      messages: [
-        {
-          role: "system",
-          content: `You are Swzzle — a savage AI crypto trading system. You are responding to your operator via the HQ command terminal. Be direct, informative, and speak in your voice. You can discuss your trading strategy, market analysis, current positions, risk parameters, and how you operate. Keep responses concise — 2-4 sentences unless more detail is genuinely needed. Current time: ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", dateStyle: "short", timeStyle: "short" })} ET.`,
-        },
-        {
-          role: "user",
-          content: command.trim(),
-        },
-      ],
-      temperature: 0.9,
-      max_tokens: 400,
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    return NextResponse.json({ error: `Grok error: ${err}` }, { status: 500 });
+  if (!command?.trim()) {
+    return NextResponse.json({ error: "No command provided" }, { status: 400 });
   }
 
-  const data = await response.json();
-  const reply = data.choices?.[0]?.message?.content ?? "No response.";
-  return NextResponse.json({ reply });
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/commands`, {
+    method: "POST",
+    headers: sbHeaders,
+    body: JSON.stringify({ command: command.trim(), status: "pending" }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    return NextResponse.json({ error: `DB error: ${err}` }, { status: 500 });
+  }
+
+  const rows = await res.json();
+  const id = Array.isArray(rows) ? rows[0]?.id : rows?.id;
+  if (!id) {
+    return NextResponse.json({ error: "No id returned from DB" }, { status: 500 });
+  }
+  return NextResponse.json({ id });
+}
+
+// GET ?id=X — return { id, status, result }
+export async function GET(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/commands?id=eq.${id}&select=id,status,result`,
+    {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    }
+  );
+
+  if (!res.ok) return NextResponse.json({ error: "DB error" }, { status: 500 });
+  const rows = await res.json();
+  if (!rows.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(rows[0]);
 }

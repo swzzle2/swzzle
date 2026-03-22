@@ -9,12 +9,28 @@ import ActivityFeed from "@/components/ActivityFeed";
 import Link from "next/link";
 
 type Tab = "overview" | "trades" | "reports" | "activity" | "command";
+type LogType = "in" | "out" | "err" | "pending";
+
+interface LogEntry {
+  ts: string;
+  msg: string;
+  type: LogType;
+}
+
+function getTs() {
+  return new Date().toLocaleTimeString("en-US", {
+    timeZone: "America/New_York",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
 
 export default function HQDashboard() {
   const [tab, setTab] = useState<Tab>("overview");
   const [killed, setKilled] = useState(false);
   const [command, setCommand] = useState("");
-  const [cmdLog, setCmdLog] = useState<Array<{ ts: string; msg: string; type: "in" | "out" | "err" }>>([]);
+  const [cmdLog, setCmdLog] = useState<LogEntry[]>([]);
   const [sending, setSending] = useState(false);
   const [killing, setKilling] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
@@ -44,37 +60,98 @@ export default function HQDashboard() {
 
   const handleSendCommand = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!command.trim()) return;
+    if (!command.trim() || sending) return;
     setSending(true);
-    const ts = new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true });
+
     const msg = command.trim();
-    setCmdLog((prev) => [...prev, { ts, msg, type: "in" }]);
+    setCmdLog((prev) => [...prev, { ts: getTs(), msg, type: "in" }]);
     setCommand("");
 
     try {
+      // Save command to Supabase via API route, get back the row id
       const res = await fetch("/api/command", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command: msg }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true }), msg: data.error ?? "Unknown error", type: "err" }]);
-      } else {
-        setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true }), msg: data.reply, type: "out" }]);
+
+      if (!res.ok || !data.id) {
+        setCmdLog((prev) => [
+          ...prev,
+          { ts: getTs(), msg: data.error ?? "Failed to queue command", type: "err" },
+        ]);
+        setSending(false);
+        return;
       }
+
+      const cmdId = data.id;
+
+      // Show pending entry while bot processes
+      setCmdLog((prev) => [
+        ...prev,
+        { ts: getTs(), msg: "⟳ Queued — waiting for bot to execute...", type: "pending" },
+      ]);
+
+      // Poll every 5s for up to 3 minutes
+      let attempts = 0;
+      const poll = setInterval(async () => {
+        attempts++;
+        try {
+          const r = await fetch(`/api/command?id=${cmdId}`);
+          const d = await r.json();
+
+          if (d.status === "executed") {
+            clearInterval(poll);
+            setCmdLog((prev) => {
+              const updated = [...prev];
+              for (let i = updated.length - 1; i >= 0; i--) {
+                if (updated[i].type === "pending") {
+                  updated[i] = { ts: getTs(), msg: d.result ?? "Done.", type: "out" };
+                  break;
+                }
+              }
+              return updated;
+            });
+            setSending(false);
+          } else if (attempts >= 36) {
+            // 3-minute timeout
+            clearInterval(poll);
+            setCmdLog((prev) => {
+              const updated = [...prev];
+              for (let i = updated.length - 1; i >= 0; i--) {
+                if (updated[i].type === "pending") {
+                  updated[i] = {
+                    ts: getTs(),
+                    msg: "Timeout — bot may be mid-scan. Result will show next poll cycle.",
+                    type: "err",
+                  };
+                  break;
+                }
+              }
+              return updated;
+            });
+            setSending(false);
+          }
+        } catch {
+          // network blip — keep polling
+        }
+      }, 5000);
     } catch (err) {
-      setCmdLog((prev) => [...prev, { ts: new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true }), msg: `Failed to send: ${err}`, type: "err" }]);
+      setCmdLog((prev) => [
+        ...prev,
+        { ts: getTs(), msg: `Failed to send: ${err}`, type: "err" },
+      ]);
+      setSending(false);
     }
-    setSending(false);
   };
 
   const tabs: { id: Tab; label: string; short: string }[] = [
-    { id: "overview",  label: "Overview",  short: "Home"     },
-    { id: "trades",    label: "All Trades", short: "Trades"  },
-    { id: "reports",   label: "Reports",   short: "Reports"  },
-    { id: "activity",  label: "Activity",  short: "Activity" },
-    { id: "command",   label: "Command",   short: "CMD"      },
+    { id: "overview",  label: "Overview",   short: "Home"     },
+    { id: "trades",    label: "All Trades", short: "Trades"   },
+    { id: "reports",   label: "Reports",    short: "Reports"  },
+    { id: "activity",  label: "Activity",   short: "Activity" },
+    { id: "command",   label: "Command",    short: "CMD"      },
   ];
 
   return (
@@ -212,17 +289,23 @@ export default function HQDashboard() {
 
         {tab === "command" && (
           <section>
-            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-4">
-              Command Terminal
-            </h2>
+            <div className="mb-4">
+              <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-1">
+                Command Terminal
+              </h2>
+              <p className="text-gray-600 text-xs font-mono">
+                Commands are queued in the database and executed by the bot within 60 seconds.
+              </p>
+            </div>
+
             <div className="neon-card overflow-hidden">
               <div
                 ref={logRef}
-                className="h-64 md:h-80 overflow-y-auto p-3 md:p-4 font-mono text-xs space-y-2"
+                className="h-64 md:h-96 overflow-y-auto p-3 md:p-4 font-mono text-xs space-y-2"
                 style={{ background: "rgba(0,0,0,0.6)" }}
               >
-                <div className="text-purple-400">SWZZLE COMMAND TERMINAL v1.0</div>
-                <div className="text-gray-600">Send instructions to the trading bot.</div>
+                <div className="text-purple-400">SWZZLE COMMAND TERMINAL v2.0</div>
+                <div className="text-gray-600">Commands: buy [sym] [amt] | sell [sym] | pause | resume | status | or ask anything</div>
                 {cmdLog.length === 0 && (
                   <div className="text-gray-700 mt-4">No commands sent yet.</div>
                 )}
@@ -237,6 +320,9 @@ export default function HQDashboard() {
                     )}
                     {entry.type === "out" && (
                       <span className="text-green-400 break-all">swzzle&gt; {entry.msg}</span>
+                    )}
+                    {entry.type === "pending" && (
+                      <span className="text-yellow-500 break-all animate-pulse">bot&gt; {entry.msg}</span>
                     )}
                     {entry.type === "err" && (
                       <span className="text-red-400 break-all">error&gt; {entry.msg}</span>
@@ -253,7 +339,7 @@ export default function HQDashboard() {
                   type="text"
                   value={command}
                   onChange={(e) => setCommand(e.target.value)}
-                  placeholder="Enter instruction..."
+                  placeholder="buy SOL 25 | sell BTC | pause | resume | status"
                   className="neon-input text-sm flex-1 min-w-0"
                   disabled={sending}
                 />
@@ -262,13 +348,9 @@ export default function HQDashboard() {
                   disabled={sending || !command.trim()}
                   className="btn-neon text-xs py-2 px-3 md:px-5 flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {sending ? "..." : "Send"}
+                  {sending ? "⟳" : "Send"}
                 </button>
               </form>
-            </div>
-
-            <div className="mt-3 text-xs font-mono text-gray-700">
-              Commands are stored in the database and processed by the Swzzle trading engine.
             </div>
           </section>
         )}
