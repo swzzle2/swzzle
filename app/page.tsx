@@ -187,9 +187,12 @@ export default function Home() {
           <p className="text-gray-600 text-xs font-mono text-center px-4">
             Not financial advice. Past performance does not guarantee future results.
           </p>
-          <span className="text-xs font-mono uppercase tracking-widest text-gray-700">
-            Powered by Swzzle
-          </span>
+          <Link
+            href="/hq"
+            className="text-xs font-mono uppercase tracking-widest text-gray-700 hover:text-purple-400 transition-colors"
+          >
+            Powered by Swzzle →
+          </Link>
         </footer>
       </div>
     </div>
