@@ -2,11 +2,5 @@
   "framework": "nextjs",
   "buildCommand": "next build",
   "devCommand": "next dev",
-  "installCommand": "npm install",
-  "crons": [
-    {
-      "path": "/api/generate-report",
-      "schedule": "0 * * * *"
-    }
-  ]
+  "installCommand": "npm install"
 }
