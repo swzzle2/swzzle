@@ -3,6 +3,7 @@ import PnLDashboard from "@/components/PnLDashboard";
 import TradesFeed from "@/components/TradesFeed";
 import ReportsFeed from "@/components/ReportsFeed";
 import PortfolioWidget from "@/components/PortfolioWidget";
+import BuySignals from "@/components/BuySignals";
 import Link from "next/link";
 
 export default function Home() {
@@ -108,6 +109,11 @@ export default function Home() {
           </div>
 
         </section>
+
+        <hr className="neon-hr" />
+
+        {/* BUY SIGNALS */}
+        <BuySignals />
 
         <hr className="neon-hr" />
 
