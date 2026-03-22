@@ -114,8 +114,8 @@ export default function HQDashboard() {
               return updated;
             });
             setSending(false);
-          } else if (attempts >= 36) {
-            // 3-minute timeout
+          } else if (attempts >= 120) {
+            // 10-minute timeout
             clearInterval(poll);
             setCmdLog((prev) => {
               const updated = [...prev];
@@ -123,7 +123,7 @@ export default function HQDashboard() {
                 if (updated[i].type === "pending") {
                   updated[i] = {
                     ts: getTs(),
-                    msg: "Timeout — bot may be mid-scan. Result will show next poll cycle.",
+                    msg: "Bot not responding. Is swzzle_bot.py running? Command is still queued — it will execute when the bot starts.",
                     type: "err",
                   };
                   break;
