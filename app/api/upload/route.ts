@@ -32,12 +32,22 @@ export async function POST(request: Request) {
 
     // Use Vercel Blob in production, local filesystem in dev
     if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const { put } = await import('@vercel/blob');
-      const blob = await put(filename, file, {
-        access: 'public',
-        addRandomSuffix: false,
-      });
-      return NextResponse.json({ url: blob.url });
+      try {
+        const { put } = await import('@vercel/blob');
+        const buffer = await file.arrayBuffer();
+        const blob = await put(filename, buffer, {
+          access: 'public',
+          addRandomSuffix: false,
+          contentType: file.type,
+        });
+        return NextResponse.json({ url: blob.url });
+      } catch (blobError) {
+        console.error('Vercel Blob error:', blobError);
+        return NextResponse.json(
+          { error: `Blob upload failed: ${blobError instanceof Error ? blobError.message : String(blobError)}` },
+          { status: 500 }
+        );
+      }
     } else {
       // Local filesystem fallback
       const fs = await import('fs');
