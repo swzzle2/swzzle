@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import { AddToCartButton } from '@/components/AddToCartButton';
-import { VitruvianMan } from '@/components/VitruvianMan';
 import { ProductGallery } from '@/components/ProductGallery';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
@@ -23,18 +22,10 @@ export default async function BlueProductPage() {
     <main className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        {/* Background Vitruvian */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none">
-          <VitruvianMan color="#00F5FF" size={800} />
-        </div>
-
         <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Vitruvian + Product Gallery */}
-            <div className="flex items-center justify-center gap-8">
-              <div className="hidden md:block shrink-0">
-                <VitruvianMan color="#00F5FF" size={240} />
-              </div>
+            {/* Left: Product Gallery */}
+            <div className="flex items-center justify-center">
               <ProductGallery
                 mainImage={product.image}
                 images={product.images || []}

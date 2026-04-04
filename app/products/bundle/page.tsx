@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { AddToCartButton } from '@/components/AddToCartButton';
-import { VitruvianMan } from '@/components/VitruvianMan';
 import { ProductGallery } from '@/components/ProductGallery';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
@@ -22,11 +21,6 @@ export default async function BundleProductPage() {
     <main className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        {/* Background Vitruvian */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none">
-          <VitruvianMan color="#b600ff" size={800} />
-        </div>
-
         <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Both Product Images */}
@@ -130,9 +124,6 @@ export default async function BundleProductPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Red Card */}
             <div className="bg-background border border-neon-red/20 rounded-lg p-8 relative overflow-hidden">
-              <div className="absolute top-4 right-4 opacity-10">
-                <VitruvianMan color="#FF2020" size={120} />
-              </div>
               <div className="relative">
                 <h3 className="font-display text-xl text-neon-red tracking-wider mb-2">
                   SWZZLE RED
@@ -150,9 +141,6 @@ export default async function BundleProductPage() {
 
             {/* Blue Card */}
             <div className="bg-background border border-neon-cyan/20 rounded-lg p-8 relative overflow-hidden">
-              <div className="absolute top-4 right-4 opacity-10">
-                <VitruvianMan color="#00F5FF" size={120} />
-              </div>
               <div className="relative">
                 <h3 className="font-display text-xl text-neon-cyan tracking-wider mb-2">
                   SWZZLE BLUE

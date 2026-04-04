@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 :root {
   --background: #050508;
   --foreground: #f0f0f0;
@@ -63,10 +73,6 @@ body {
 ::-webkit-scrollbar-thumb { background: #1a1a2e; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #2a2a4e; }
 
-/* Vitruvian SVG glow */
-.vitruvian-glow {
-  filter: drop-shadow(0 0 20px rgba(0,245,255,0.4)) drop-shadow(0 0 40px rgba(182,0,255,0.2));
-}
 
 /* Hero wordmark */
 .swzzle-wordmark {

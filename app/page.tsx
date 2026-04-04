@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { VitruvianMan } from '@/components/VitruvianMan';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
 
@@ -54,16 +53,17 @@ export default async function HomePage() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto">
-          <div className="mb-8 animate-float">
-            <VitruvianMan size={250} />
+          {/* Logo */}
+          <div className="relative w-[300px] md:w-[500px] lg:w-[600px] h-auto mb-6">
+            <Image
+              src="/logo.png"
+              alt="Swzzle"
+              width={600}
+              height={200}
+              className="w-full h-auto drop-shadow-[0_0_40px_rgba(0,245,255,0.3)]"
+              priority
+            />
           </div>
-
-          <h1
-            className="font-display font-black tracking-[0.2em] text-foreground mb-4"
-            style={{ fontSize: 'clamp(48px, 12vw, 140px)' }}
-          >
-            SWZZLE
-          </h1>
 
           <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-10">
             Built From The Same Dirt We Play On

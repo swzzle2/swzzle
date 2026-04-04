@@ -1,5 +1,3 @@
-import { VitruvianMan } from '@/components/VitruvianMan';
-
 export const metadata = {
   title: 'About — Swzzle Liniment',
   description:
@@ -9,11 +7,6 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <section className="relative max-w-5xl mx-auto px-4 py-16 overflow-hidden">
-      {/* Decorative background Vitruvian */}
-      <div className="absolute top-12 right-0 opacity-10 pointer-events-none select-none hidden lg:block">
-        <VitruvianMan color="#a855f7" size={500} />
-      </div>
-
       <div className="relative z-10 max-w-2xl">
         <h1 className="font-display text-4xl md:text-5xl text-neon-cyan mb-3 tracking-wide">
           About Swzzle
@@ -79,11 +72,6 @@ export default function AboutPage() {
             formulation is tested on the course, refined by hand, and shipped from
             a small town in southeast Ohio.
           </p>
-        </div>
-
-        {/* Inline small Vitruvian for mobile */}
-        <div className="flex justify-center lg:hidden mb-16 opacity-20">
-          <VitruvianMan color="#a855f7" size={200} />
         </div>
 
         {/* Mission */}
