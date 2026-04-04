@@ -9,7 +9,6 @@ export async function GET() {
   try {
     const vercelBlob = await import('@vercel/blob');
     const blob = await vercelBlob.put('test/ping.txt', 'test upload', {
-      access: 'public',
       addRandomSuffix: true,
       contentType: 'text/plain',
     });
