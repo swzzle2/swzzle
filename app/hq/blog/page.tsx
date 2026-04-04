@@ -1,14 +1,17 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { isAuthenticated } from '@/lib/auth';
-import { getPosts } from '@/lib/posts';
+import { readData } from '@/lib/data-store';
+import type { Post } from '@/lib/posts';
+
+export const dynamic = 'force-dynamic';
 
 export default async function BlogAdminPage() {
   if (!(await isAuthenticated())) {
     redirect('/hq/login');
   }
 
-  const posts = getPosts();
+  const posts = await readData<Post[]>('posts.json');
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-10">

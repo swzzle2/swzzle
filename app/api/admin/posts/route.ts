@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { getPosts, savePosts, type Post } from '@/lib/posts';
+import { readData, writeData } from '@/lib/data-store';
+import type { Post } from '@/lib/posts';
 
 export async function GET(request: NextRequest) {
   if (!(await isAuthenticated())) {
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
   }
 
   const id = request.nextUrl.searchParams.get('id');
-  const posts = getPosts();
+  const posts = await readData<Post[]>('posts.json');
 
   if (id) {
     const post = posts.find((p) => p.id === id);
@@ -28,27 +29,21 @@ export async function POST(request: Request) {
 
   try {
     const data = await request.json();
-    const posts = getPosts();
+    const posts = await readData<Post[]>('posts.json');
 
     const excerpt = data.body
       ? data.body.replace(/[#*_`\[\]]/g, '').slice(0, 150).trim() + '...'
       : '';
 
     if (data.id) {
-      // Update existing post
       const index = posts.findIndex((p) => p.id === data.id);
       if (index === -1) {
         return NextResponse.json({ error: 'Post not found' }, { status: 404 });
       }
-      posts[index] = {
-        ...posts[index],
-        ...data,
-        excerpt,
-      };
-      savePosts(posts);
+      posts[index] = { ...posts[index], ...data, excerpt };
+      await writeData('posts.json', posts);
       return NextResponse.json({ success: true, post: posts[index] });
     } else {
-      // Create new post
       const newPost: Post = {
         id: crypto.randomUUID(),
         title: data.title || 'Untitled',
@@ -60,10 +55,14 @@ export async function POST(request: Request) {
         excerpt,
       };
       posts.unshift(newPost);
-      savePosts(posts);
+      await writeData('posts.json', posts);
       return NextResponse.json({ success: true, post: newPost });
     }
-  } catch {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  } catch (error) {
+    console.error('Post save error:', error);
+    return NextResponse.json(
+      { error: `Save failed: ${error instanceof Error ? error.message : 'Unknown error'}` },
+      { status: 500 }
+    );
   }
 }

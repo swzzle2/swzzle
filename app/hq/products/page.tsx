@@ -1,14 +1,17 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { isAuthenticated } from '@/lib/auth';
-import { getProducts } from '@/lib/products';
+import { readData } from '@/lib/data-store';
+import type { Product } from '@/lib/products';
+
+export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {
   if (!(await isAuthenticated())) {
     redirect('/hq/login');
   }
 
-  const products = getProducts();
+  const products = await readData<Product[]>('products.json');
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-10">

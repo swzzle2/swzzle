@@ -1,16 +1,19 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { isAuthenticated } from '@/lib/auth';
-import { getProducts } from '@/lib/products';
-import { getPosts } from '@/lib/posts';
+import { readData } from '@/lib/data-store';
+import type { Product } from '@/lib/products';
+import type { Post } from '@/lib/posts';
+
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   if (!(await isAuthenticated())) {
     redirect('/hq/login');
   }
 
-  const products = getProducts();
-  const posts = getPosts();
+  const products = await readData<Product[]>('products.json');
+  const posts = await readData<Post[]>('posts.json');
   const activeProducts = products.filter((p) => p.status === 'active').length;
   const publishedPosts = posts.filter((p) => p.status === 'published').length;
 
