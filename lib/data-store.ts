@@ -9,26 +9,41 @@ import path from 'path';
 
 const BLOB_DATA_PREFIX = 'data';
 
+// Cache blob URLs after writing so we can read them back without list()
+const blobUrlCache: Record<string, string> = {};
+
 async function blobPut(filename: string, data: string): Promise<void> {
   const { put } = await import('@vercel/blob');
-  await put(`${BLOB_DATA_PREFIX}/${filename}`, data, {
+  const key = `${BLOB_DATA_PREFIX}/${filename}`;
+  const blob = await put(key, data, {
     access: 'public',
     addRandomSuffix: false,
     contentType: 'application/json',
   });
+  blobUrlCache[filename] = blob.url;
 }
 
 async function blobGet(filename: string): Promise<string | null> {
   try {
+    // If we have a cached URL from a previous write, use it directly
+    if (blobUrlCache[filename]) {
+      const res = await fetch(blobUrlCache[filename], { cache: 'no-store' });
+      if (res.ok) return await res.text();
+    }
+
+    // Otherwise, list blobs to find the URL
     const { list } = await import('@vercel/blob');
-    const result = await list({ prefix: `${BLOB_DATA_PREFIX}/${filename}` });
-    const match = result.blobs.find((b) => b.pathname === `${BLOB_DATA_PREFIX}/${filename}`);
+    const key = `${BLOB_DATA_PREFIX}/${filename}`;
+    const result = await list({ prefix: key, limit: 10 });
+    const match = result.blobs.find((b) => b.pathname === key);
     if (!match) return null;
 
-    const res = await fetch(match.url);
+    blobUrlCache[filename] = match.url;
+    const res = await fetch(match.url, { cache: 'no-store' });
     if (!res.ok) return null;
     return await res.text();
-  } catch {
+  } catch (err) {
+    console.error(`blobGet(${filename}) error:`, err);
     return null;
   }
 }
