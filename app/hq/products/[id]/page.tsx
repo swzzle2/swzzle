@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,6 +17,7 @@ type Product = {
   directions: string;
   warnings: string;
   image: string;
+  images?: string[];
   color: string;
 };
 
@@ -29,8 +30,11 @@ export default function ProductEditorPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [authed, setAuthed] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const checkAuth = useCallback(async () => {
     const res = await fetch('/api/auth/check');
@@ -47,6 +51,8 @@ export default function ProductEditorPage() {
       const res = await fetch(`/api/admin/products?id=${productId}`);
       if (!res.ok) throw new Error('Product not found');
       const data = await res.json();
+      // Ensure images array exists
+      if (!data.images) data.images = [];
       setProduct(data);
     } catch {
       setMessage('Failed to load product');
@@ -63,11 +69,114 @@ export default function ProductEditorPage() {
     if (authed) loadProduct();
   }, [authed, loadProduct]);
 
-  function updateField(field: keyof Product, value: string | number | boolean) {
+  function updateField(field: keyof Product, value: string | number | boolean | string[]) {
     if (!product) return;
     setProduct({ ...product, [field]: value });
   }
 
+  // ── Image Upload ──────────────────────────────────────────────
+  async function uploadFiles(files: FileList | File[]) {
+    if (!product) return;
+    setUploading(true);
+    setMessage('');
+
+    const newUrls: string[] = [];
+
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', `products/${product.id}`);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (!res.ok) {
+          const err = await res.json();
+          setMessage(err.error || 'Upload failed');
+          continue;
+        }
+        const data = await res.json();
+        newUrls.push(data.url);
+      } catch {
+        setMessage('Upload failed');
+      }
+    }
+
+    if (newUrls.length > 0) {
+      const currentImages = product.images || [];
+      const updatedImages = [...currentImages, ...newUrls];
+
+      // If no main image set, use the first upload
+      const mainImage = product.image && !product.image.startsWith('/labels/')
+        ? product.image
+        : newUrls[0];
+
+      setProduct({
+        ...product,
+        image: mainImage,
+        images: updatedImages,
+      });
+      setMessage(`${newUrls.length} image(s) uploaded`);
+    }
+
+    setUploading(false);
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files.length > 0) {
+      uploadFiles(e.target.files);
+      e.target.value = '';
+    }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files.length > 0) {
+      uploadFiles(e.dataTransfer.files);
+    }
+  }
+
+  function setAsMainImage(url: string) {
+    if (!product) return;
+    setProduct({ ...product, image: url });
+    setMessage('Main image updated — save to apply');
+  }
+
+  async function deleteImage(url: string) {
+    if (!product) return;
+
+    // Remove from Vercel Blob (only for uploaded images, not local placeholders)
+    if (url.startsWith('http')) {
+      try {
+        await fetch('/api/upload', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+      } catch {
+        // Continue anyway — remove from product data
+      }
+    }
+
+    const updatedImages = (product.images || []).filter((img) => img !== url);
+    const mainImage = product.image === url
+      ? (updatedImages[0] || '')
+      : product.image;
+
+    setProduct({ ...product, image: mainImage, images: updatedImages });
+    setMessage('Image removed — save to apply');
+  }
+
+  function moveImage(index: number, direction: -1 | 1) {
+    if (!product?.images) return;
+    const arr = [...product.images];
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= arr.length) return;
+    [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+    setProduct({ ...product, images: arr });
+  }
+
+  // ── Grok Generate ─────────────────────────────────────────────
   async function handleGenerateDescription() {
     if (!product) return;
     setGenerating(true);
@@ -120,6 +229,7 @@ export default function ProductEditorPage() {
     }
   }
 
+  // ── Save ──────────────────────────────────────────────────────
   async function handleSave() {
     if (!product) return;
     setSaving(true);
@@ -141,6 +251,7 @@ export default function ProductEditorPage() {
     }
   }
 
+  // ── Render ────────────────────────────────────────────────────
   if (loading || !authed) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -156,6 +267,8 @@ export default function ProductEditorPage() {
       </div>
     );
   }
+
+  const allImages = product.images || [];
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-10">
@@ -173,27 +286,129 @@ export default function ProductEditorPage() {
         </div>
 
         <div className="space-y-6">
-          {/* Image */}
+          {/* ═══ IMAGES SECTION ═══ */}
           <div className="bg-surface border border-border rounded-lg p-6">
-            <label className="block text-sm font-display text-foreground/50 tracking-wider mb-3">
-              IMAGE
+            <label className="block text-sm font-display text-foreground/50 tracking-wider mb-4">
+              IMAGES
             </label>
+
+            {/* Main image display */}
             {product.image && (
-              <div className="relative w-48 h-48 mb-3">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-contain rounded"
-                />
+              <div className="mb-4">
+                <p className="text-xs font-display text-neon-cyan/60 tracking-wider mb-2">MAIN IMAGE</p>
+                <div className="relative w-48 h-48 border border-neon-cyan/30 rounded-lg overflow-hidden">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
               </div>
             )}
-            <p className="text-foreground/30 text-xs font-body">
-              {'// TODO: wire image upload'}
-            </p>
+
+            {/* Gallery grid */}
+            {allImages.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-display text-foreground/40 tracking-wider mb-2">
+                  ALL IMAGES ({allImages.length})
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {allImages.map((url, i) => (
+                    <div
+                      key={url}
+                      className={`relative group rounded-lg overflow-hidden border ${
+                        url === product.image
+                          ? 'border-neon-cyan ring-2 ring-neon-cyan/30'
+                          : 'border-border'
+                      }`}
+                    >
+                      <div className="relative w-full aspect-square">
+                        <Image src={url} alt={`Image ${i + 1}`} fill className="object-cover" />
+                      </div>
+
+                      {/* Overlay controls */}
+                      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-1">
+                        {url !== product.image && (
+                          <button
+                            onClick={() => setAsMainImage(url)}
+                            className="text-[10px] font-display tracking-wider text-neon-cyan border border-neon-cyan/40 px-2 py-0.5 rounded hover:bg-neon-cyan/10 w-full"
+                          >
+                            SET MAIN
+                          </button>
+                        )}
+                        {url === product.image && (
+                          <span className="text-[10px] font-display tracking-wider text-neon-cyan">
+                            &#9733; MAIN
+                          </span>
+                        )}
+                        <div className="flex gap-1 w-full">
+                          <button
+                            onClick={() => moveImage(i, -1)}
+                            disabled={i === 0}
+                            className="flex-1 text-[10px] font-display text-foreground/60 border border-foreground/20 px-1 py-0.5 rounded hover:bg-foreground/10 disabled:opacity-30"
+                          >
+                            &larr;
+                          </button>
+                          <button
+                            onClick={() => moveImage(i, 1)}
+                            disabled={i === allImages.length - 1}
+                            className="flex-1 text-[10px] font-display text-foreground/60 border border-foreground/20 px-1 py-0.5 rounded hover:bg-foreground/10 disabled:opacity-30"
+                          >
+                            &rarr;
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => deleteImage(url)}
+                          className="text-[10px] font-display tracking-wider text-neon-red border border-neon-red/40 px-2 py-0.5 rounded hover:bg-neon-red/10 w-full"
+                        >
+                          DELETE
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Upload zone */}
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                dragOver
+                  ? 'border-neon-cyan bg-neon-cyan/5'
+                  : 'border-border hover:border-foreground/30'
+              }`}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              {uploading ? (
+                <p className="text-neon-cyan font-display text-sm tracking-wider animate-pulse">
+                  UPLOADING...
+                </p>
+              ) : (
+                <>
+                  <p className="text-foreground/50 font-body text-sm mb-1">
+                    Drag &amp; drop images here, or click to browse
+                  </p>
+                  <p className="text-foreground/30 font-body text-xs">
+                    JPEG, PNG, WebP, GIF — max 10MB each — upload as many as you want
+                  </p>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Core fields */}
+          {/* ═══ CORE FIELDS ═══ */}
           <div className="bg-surface border border-border rounded-lg p-6 space-y-4">
             <div>
               <label className="block text-sm font-display text-foreground/50 tracking-wider mb-2">
@@ -280,7 +495,7 @@ export default function ProductEditorPage() {
             </div>
           </div>
 
-          {/* Product details */}
+          {/* ═══ PRODUCT DETAILS ═══ */}
           <div className="bg-surface border border-border rounded-lg p-6 space-y-4">
             <div>
               <label className="block text-sm font-display text-foreground/50 tracking-wider mb-2">
@@ -319,7 +534,7 @@ export default function ProductEditorPage() {
             </div>
           </div>
 
-          {/* Actions */}
+          {/* ═══ ACTIONS ═══ */}
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -333,9 +548,13 @@ export default function ProductEditorPage() {
             {message && (
               <p
                 className={`text-sm font-body ${
-                  message.includes('success')
+                  message.includes('success') || message.includes('uploaded') || message.includes('updated')
                     ? 'text-neon-cyan'
-                    : 'text-neon-red'
+                    : message.includes('removed')
+                    ? 'text-yellow-400'
+                    : message.includes('Failed')
+                    ? 'text-neon-red'
+                    : 'text-foreground/50'
                 }`}
               >
                 {message}

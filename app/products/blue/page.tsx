@@ -1,8 +1,8 @@
 import { getProduct } from '@/lib/products';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { VitruvianMan } from '@/components/VitruvianMan';
+import { ProductGallery } from '@/components/ProductGallery';
 
 export const metadata = {
   title: 'SWZZLE BLUE LINIMENT | Cool Down',
@@ -26,20 +26,17 @@ export default function BlueProductPage() {
 
         <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Vitruvian + Product Image */}
+            {/* Left: Vitruvian + Product Gallery */}
             <div className="flex items-center justify-center gap-8">
               <div className="hidden md:block shrink-0">
                 <VitruvianMan color="#00F5FF" size={240} />
               </div>
-              <div className="relative w-[280px] h-[400px]">
-                <Image
-                  src="/labels/blue-label.png"
-                  alt="Swzzle Blue Liniment"
-                  fill
-                  className="object-contain drop-shadow-[0_0_40px_rgba(0,245,255,0.3)]"
-                  priority
-                />
-              </div>
+              <ProductGallery
+                mainImage={product.image}
+                images={product.images || []}
+                alt="Swzzle Blue Liniment"
+                color="#00F5FF"
+              />
             </div>
 
             {/* Right: Product Info */}

@@ -12,6 +12,7 @@ export type Product = {
   directions: string;
   warnings: string;
   image: string;
+  images?: string[];
   color: string;
 };
 

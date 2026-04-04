@@ -1,8 +1,8 @@
 import { getProduct } from '@/lib/products';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { VitruvianMan } from '@/components/VitruvianMan';
+import { ProductGallery } from '@/components/ProductGallery';
 
 export const metadata = {
   title: 'SWZZLE RED LINIMENT | Warm Up',
@@ -26,20 +26,17 @@ export default function RedProductPage() {
 
         <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Vitruvian + Product Image */}
+            {/* Left: Vitruvian + Product Gallery */}
             <div className="flex items-center justify-center gap-8">
               <div className="hidden md:block shrink-0">
                 <VitruvianMan color="#FF2020" size={240} />
               </div>
-              <div className="relative w-[280px] h-[400px]">
-                <Image
-                  src="/labels/red-label.png"
-                  alt="Swzzle Red Liniment"
-                  fill
-                  className="object-contain drop-shadow-[0_0_40px_rgba(255,32,32,0.3)]"
-                  priority
-                />
-              </div>
+              <ProductGallery
+                mainImage={product.image}
+                images={product.images || []}
+                alt="Swzzle Red Liniment"
+                color="#FF2020"
+              />
             </div>
 
             {/* Right: Product Info */}

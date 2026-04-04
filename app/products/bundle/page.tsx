@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { VitruvianMan } from '@/components/VitruvianMan';
+import { ProductGallery } from '@/components/ProductGallery';
 
 export const metadata = {
   title: 'SWZZLE BUNDLE | The Complete System',
@@ -88,6 +89,18 @@ export default function BundleProductPage() {
           </div>
         </div>
       </section>
+
+      {/* Additional Gallery Images */}
+      {product.images && product.images.length > 0 && (
+        <section className="max-w-6xl mx-auto px-6 py-12">
+          <ProductGallery
+            mainImage={product.image}
+            images={product.images}
+            alt="Swzzle Bundle"
+            color="#b600ff"
+          />
+        </section>
+      )}
 
       {/* Divider */}
       <div className="max-w-6xl mx-auto px-6">
