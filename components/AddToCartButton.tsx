@@ -14,7 +14,7 @@ export function AddToCartButton({ product, className = '' }: { product: Product;
         name: 'Swzzle Red Liniment',
         descriptor: 'Warm Up',
         price: 24.99,
-        image: '/labels/red-label.png',
+        image: '/labels/red-label.svg',
         color: '#FF2020',
       });
       addItem({
@@ -22,7 +22,7 @@ export function AddToCartButton({ product, className = '' }: { product: Product;
         name: 'Swzzle Blue Liniment',
         descriptor: 'Cool Down',
         price: 24.99,
-        image: '/labels/blue-label.png',
+        image: '/labels/blue-label.svg',
         color: '#00F5FF',
       });
     } else {

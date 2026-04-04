@@ -41,7 +41,7 @@ const products = [
     color: '#FF2020',
     borderClass: 'neon-border-red',
     textClass: 'text-neon-red',
-    image: '/labels/red-label.png',
+    image: '/labels/red-label.svg',
   },
   {
     id: 'blue',
@@ -51,7 +51,7 @@ const products = [
     color: '#00F5FF',
     borderClass: 'neon-border-cyan',
     textClass: 'text-neon-cyan',
-    image: '/labels/blue-label.png',
+    image: '/labels/blue-label.svg',
   },
   {
     id: 'bundle',
@@ -61,7 +61,7 @@ const products = [
     color: '#b600ff',
     borderClass: 'neon-border-purple',
     textClass: 'text-neon-purple',
-    image: '/labels/bundle.png',
+    image: '/labels/bundle.svg',
   },
 ];
 

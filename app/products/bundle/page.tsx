@@ -29,7 +29,7 @@ export default function BundleProductPage() {
             <div className="flex items-center justify-center gap-4">
               <div className="relative w-[220px] h-[360px] -rotate-3">
                 <Image
-                  src="/labels/red-label.png"
+                  src="/labels/red-label.svg"
                   alt="Swzzle Red Liniment"
                   fill
                   className="object-contain drop-shadow-[0_0_30px_rgba(255,32,32,0.3)]"
@@ -38,7 +38,7 @@ export default function BundleProductPage() {
               </div>
               <div className="relative w-[220px] h-[360px] rotate-3">
                 <Image
-                  src="/labels/blue-label.png"
+                  src="/labels/blue-label.svg"
                   alt="Swzzle Blue Liniment"
                   fill
                   className="object-contain drop-shadow-[0_0_30px_rgba(0,245,255,0.3)]"

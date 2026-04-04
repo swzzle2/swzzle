@@ -10,7 +10,7 @@
     "ingredients": "Cocos Nucifera (Coconut) Oil, Ricinus Communis (Castor) Seed Oil, Prunus Armeniaca (Apricot) Kernel Oil, Menthol, Curcuma Longa (Turmeric) Root Extract, Tocopherol, Mentha Piperita (Peppermint) Oil, Eucalyptus Globulus Leaf Oil, Camphor, Zingiber Officinale (Ginger) Root Oil, Rosmarinus Officinalis (Rosemary) Leaf Oil, Piper Nigrum (Black Pepper) Seed Oil, Cinnamomum Zeylanicum (Cinnamon) Bark Oil, Capsicum Frutescens (Capsaicin) Fruit Extract",
     "directions": "Apply 4-6 drops to palm. Massage into muscles before activity. Focus on shoulders, forearms, lower back, and hip flexors. Wash hands thoroughly after applying. Keep away from eyes and face. Apply 15-20 minutes before activity.",
     "warnings": "For external use only. Patch test before first use. Keep out of reach of children. Discontinue use if irritation occurs. Do not apply to broken or irritated skin. Do not use with heating pad.",
-    "image": "/labels/red-label.png",
+    "image": "/labels/red-label.svg",
     "images": [],
     "color": "#FF2020"
   },
@@ -25,7 +25,7 @@
     "ingredients": "Cocos Nucifera (Coconut) Oil, Ricinus Communis (Castor) Seed Oil, Prunus Armeniaca (Apricot) Kernel Oil, Menthol, Curcuma Longa (Turmeric) Root Extract, Tocopherol, Mentha Piperita (Peppermint) Oil, Eucalyptus Globulus Leaf Oil, Camphor, Zingiber Officinale (Ginger) Root Oil, Rosmarinus Officinalis (Rosemary) Leaf Oil, Piper Nigrum (Black Pepper) Seed Oil",
     "directions": "Apply 4-6 drops to palm. Massage into muscles after activity. Focus on shoulders, forearms, lower back, and hip flexors. Wash hands thoroughly after applying. Keep away from eyes and face.",
     "warnings": "For external use only. Patch test before first use. Keep out of reach of children. Discontinue use if irritation occurs. Do not apply to broken or irritated skin. Do not use with heating pad.",
-    "image": "/labels/blue-label.png",
+    "image": "/labels/blue-label.svg",
     "images": [],
     "color": "#00F5FF"
   },
@@ -40,7 +40,7 @@
     "ingredients": "See individual products",
     "directions": "Use Red before activity. Use Blue after. Repeat until you forget how old you are.",
     "warnings": "See individual products.",
-    "image": "/labels/bundle.png",
+    "image": "/labels/bundle.svg",
     "images": [],
     "color": "#b600ff"
   }

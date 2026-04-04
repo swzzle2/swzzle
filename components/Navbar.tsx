@@ -2,11 +2,14 @@
 
 import Link from 'next/link';
 import { useCartStore } from '@/lib/cart-store';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function Navbar() {
   const itemCount = useCartStore((s) => s.getItemCount());
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -34,7 +37,7 @@ export function Navbar() {
           </Link>
           <Link href="/cart" className="relative text-sm font-display uppercase tracking-wider text-gray-400 hover:text-foreground transition-colors">
             Cart
-            {itemCount > 0 && (
+            {mounted && itemCount > 0 && (
               <span className="absolute -top-2 -right-4 bg-neon-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {itemCount}
               </span>
@@ -67,7 +70,7 @@ export function Navbar() {
           <Link href="/blog" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">Blog</Link>
           <Link href="/about" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">About</Link>
           <Link href="/cart" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">
-            Cart {itemCount > 0 && `(${itemCount})`}
+            Cart {mounted && itemCount > 0 && `(${itemCount})`}
           </Link>
         </div>
       )}
