@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
-import { getProduct } from '@/lib/products';
+import { readData } from '@/lib/data-store';
+import type { Product } from '@/lib/products';
 
 export async function POST(request: Request) {
   try {
@@ -11,6 +12,7 @@ export async function POST(request: Request) {
     }
 
     const origin = new URL(request.url).origin;
+    const products = await readData<Product[]>('products.json');
 
     const line_items: Array<{
       price_data: {
@@ -22,15 +24,23 @@ export async function POST(request: Request) {
     }> = [];
 
     for (const item of items) {
-      const product = getProduct(item.id);
+      const product = products.find((p) => p.id === item.id);
       if (!product) continue;
+
+      // Handle both relative paths and absolute Blob URLs
+      let imageUrl = '';
+      if (product.image) {
+        imageUrl = product.image.startsWith('http')
+          ? product.image
+          : `${origin}${product.image}`;
+      }
 
       line_items.push({
         price_data: {
           currency: 'usd',
           product_data: {
             name: product.name,
-            images: product.image ? [`${origin}${product.image}`] : [],
+            images: imageUrl ? [imageUrl] : [],
           },
           unit_amount: Math.round(product.price * 100),
         },

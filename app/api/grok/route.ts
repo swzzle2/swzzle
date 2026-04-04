@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const apiKey = process.env.XAI_API_KEY;
+    const apiKey = process.env.GROK_API_KEY || process.env.XAI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
         { error: 'Grok API key not configured' },

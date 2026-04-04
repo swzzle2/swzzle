@@ -1,8 +1,10 @@
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
 import { VitruvianMan } from '@/components/VitruvianMan';
+import { readData } from '@/lib/data-store';
+import type { Product } from '@/lib/products';
+
+export const dynamic = 'force-dynamic';
 
 const mechanisms = [
   {
@@ -32,57 +34,30 @@ const mechanisms = [
   },
 ];
 
-const products = [
-  {
-    id: 'red',
-    name: 'SWZZLE RED',
-    descriptor: 'Warm Up',
-    price: '$24.99',
-    color: '#FF2020',
-    borderClass: 'neon-border-red',
-    textClass: 'text-neon-red',
-    image: '/labels/red-label.svg',
-  },
-  {
-    id: 'blue',
-    name: 'SWZZLE BLUE',
-    descriptor: 'Cool Down',
-    price: '$24.99',
-    color: '#00F5FF',
-    borderClass: 'neon-border-cyan',
-    textClass: 'text-neon-cyan',
-    image: '/labels/blue-label.svg',
-  },
-  {
-    id: 'bundle',
-    name: 'THE BUNDLE',
-    descriptor: 'The Complete System',
-    price: '$44.99',
-    color: '#b600ff',
-    borderClass: 'neon-border-purple',
-    textClass: 'text-neon-purple',
-    image: '/labels/bundle.svg',
-  },
-];
+const STYLE_MAP: Record<string, { borderClass: string; textClass: string }> = {
+  red: { borderClass: 'neon-border-red', textClass: 'text-neon-red' },
+  blue: { borderClass: 'neon-border-cyan', textClass: 'text-neon-cyan' },
+  bundle: { borderClass: 'neon-border-purple', textClass: 'text-neon-purple' },
+};
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await readData<Product[]>('products.json');
+  const activeProducts = products.filter((p) => p.status === 'active');
+
   return (
     <div className="star-field">
       {/* HERO */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
-        {/* Background glow orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-cyan/5 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-red/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto">
-          {/* Vitruvian Man */}
           <div className="mb-8 animate-float">
             <VitruvianMan size={250} />
           </div>
 
-          {/* Wordmark */}
           <h1
             className="font-display font-black tracking-[0.2em] text-foreground mb-4"
             style={{ fontSize: 'clamp(48px, 12vw, 140px)' }}
@@ -90,12 +65,10 @@ export default function HomePage() {
             SWZZLE
           </h1>
 
-          {/* Tagline */}
           <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-10">
             Built From The Same Dirt We Play On
           </p>
 
-          {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/products/red"
@@ -116,35 +89,38 @@ export default function HomePage() {
       {/* PRODUCT TRIO */}
       <section className="max-w-6xl mx-auto px-4 py-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {products.map((p) => (
-            <Link
-              key={p.id}
-              href={`/products/${p.id}`}
-              className={`border ${p.borderClass} rounded-xl p-8 bg-surface hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group`}
-            >
-              <div className="w-40 h-52 relative mb-6">
-                <Image
-                  src={p.image}
-                  alt={p.name}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <h3 className={`font-display font-black text-xl tracking-wider ${p.textClass}`}>
-                {p.name}
-              </h3>
-              <p className="text-gray-500 text-sm font-display uppercase tracking-wider mt-1">
-                {p.descriptor}
-              </p>
-              <p className={`font-display font-bold text-2xl mt-4 ${p.textClass}`}>
-                {p.price}
-              </p>
-            </Link>
-          ))}
+          {activeProducts.map((p) => {
+            const style = STYLE_MAP[p.id] || STYLE_MAP.bundle;
+            return (
+              <Link
+                key={p.id}
+                href={`/products/${p.id}`}
+                className={`border ${style.borderClass} rounded-xl p-8 bg-surface hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group`}
+              >
+                <div className="w-40 h-52 relative mb-6">
+                  <Image
+                    src={p.image}
+                    alt={p.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <h3 className={`font-display font-black text-xl tracking-wider ${style.textClass}`}>
+                  {p.name.toUpperCase()}
+                </h3>
+                <p className="text-gray-500 text-sm font-display uppercase tracking-wider mt-1">
+                  {p.descriptor}
+                </p>
+                <p className={`font-display font-bold text-2xl mt-4 ${style.textClass}`}>
+                  ${p.price}
+                </p>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      {/* THE STACK — Science Breakdown */}
+      {/* THE STACK */}
       <section className="max-w-4xl mx-auto px-4 py-20">
         <h2 className="font-display font-black text-3xl md:text-5xl text-center mb-4 tracking-wider">
           THE STACK

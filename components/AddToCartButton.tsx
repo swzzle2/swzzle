@@ -8,22 +8,14 @@ export function AddToCartButton({ product, className = '' }: { product: Product;
 
   const handleAdd = () => {
     if (product.id === 'bundle') {
-      // Bundle adds both Red and Blue
+      // Bundle adds as a single line item at the bundle price
       addItem({
-        id: 'red',
-        name: 'Swzzle Red Liniment',
-        descriptor: 'Warm Up',
-        price: 24.99,
-        image: '/labels/red-label.svg',
-        color: '#FF2020',
-      });
-      addItem({
-        id: 'blue',
-        name: 'Swzzle Blue Liniment',
-        descriptor: 'Cool Down',
-        price: 24.99,
-        image: '/labels/blue-label.svg',
-        color: '#00F5FF',
+        id: 'bundle',
+        name: product.name,
+        descriptor: product.descriptor,
+        price: product.price,
+        image: product.image,
+        color: product.color,
       });
     } else {
       addItem({
@@ -50,7 +42,7 @@ export function AddToCartButton({ product, className = '' }: { product: Product;
       onClick={handleAdd}
       className={`border-2 ${borderColor} ${textColor} font-display font-bold uppercase tracking-wider px-8 py-3 rounded transition-all duration-300 ${className}`}
     >
-      {product.id === 'bundle' ? 'Add Bundle to Cart — $44.99' : `Add to Cart — $${product.price}`}
+      {product.id === 'bundle' ? `Add Bundle to Cart — $${product.price}` : `Add to Cart — $${product.price}`}
     </button>
   );
 }

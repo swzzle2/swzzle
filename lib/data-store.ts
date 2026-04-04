@@ -18,6 +18,7 @@ async function blobPut(filename: string, data: string): Promise<void> {
   const blob = await put(key, data, {
     access: 'public',
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: 'application/json',
   });
   blobUrlCache[filename] = blob.url;
