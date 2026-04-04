@@ -1,17 +1,5 @@
 import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import fs from 'fs';
-import path from 'path';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-
-function ensureUploadDir(subfolder: string) {
-  const dir = path.join(UPLOAD_DIR, subfolder);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-}
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated())) {
@@ -39,16 +27,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'File too large. Max 10MB.' }, { status: 400 });
     }
 
-    const dir = ensureUploadDir(folder);
     const ext = file.name.split('.').pop() || 'png';
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const filepath = path.join(dir, filename);
+    const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    fs.writeFileSync(filepath, buffer);
-
-    const url = `/uploads/${folder}/${filename}`;
-    return NextResponse.json({ url });
+    // Use Vercel Blob in production, local filesystem in dev
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const { put } = await import('@vercel/blob');
+      const blob = await put(filename, file, {
+        access: 'public',
+        addRandomSuffix: false,
+      });
+      return NextResponse.json({ url: blob.url });
+    } else {
+      // Local filesystem fallback
+      const fs = await import('fs');
+      const path = await import('path');
+      const dir = path.join(process.cwd(), 'public', 'uploads', folder);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const basename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const filepath = path.join(dir, basename);
+      const buffer = Buffer.from(await file.arrayBuffer());
+      fs.writeFileSync(filepath, buffer);
+      return NextResponse.json({ url: `/uploads/${folder}/${basename}` });
+    }
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
@@ -65,13 +68,20 @@ export async function DELETE(request: Request) {
 
   try {
     const { url } = await request.json();
-    if (!url || !url.startsWith('/uploads/')) {
-      return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+    if (!url) {
+      return NextResponse.json({ error: 'No URL provided' }, { status: 400 });
     }
 
-    const filepath = path.join(process.cwd(), 'public', url);
-    if (fs.existsSync(filepath)) {
-      fs.unlinkSync(filepath);
+    if (process.env.BLOB_READ_WRITE_TOKEN && url.includes('vercel-storage.com')) {
+      const { del } = await import('@vercel/blob');
+      await del(url);
+    } else if (url.startsWith('/uploads/')) {
+      const fs = await import('fs');
+      const path = await import('path');
+      const filepath = path.join(process.cwd(), 'public', url);
+      if (fs.existsSync(filepath)) {
+        fs.unlinkSync(filepath);
+      }
     }
 
     return NextResponse.json({ success: true });
