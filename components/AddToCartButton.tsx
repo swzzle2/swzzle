@@ -40,7 +40,7 @@ export function AddToCartButton({ product, className = '' }: { product: Product;
   return (
     <button
       onClick={handleAdd}
-      className={`border-2 ${borderColor} ${textColor} font-display font-bold uppercase tracking-wider px-8 py-3 rounded transition-all duration-300 ${className}`}
+      className={`border-2 ${borderColor} ${textColor} font-display font-bold uppercase tracking-wide sm:tracking-wider px-5 sm:px-8 py-3 rounded transition-all duration-300 text-sm sm:text-base w-full sm:w-auto ${className}`}
     >
       {product.id === 'bundle' ? `Add Bundle to Cart — $${product.price}` : `Add to Cart — $${product.price}`}
     </button>

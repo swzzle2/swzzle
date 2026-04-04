@@ -22,8 +22,8 @@ export default async function BlueProductPage() {
     <main className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-28">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 lg:py-28">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left: Product Gallery */}
             <div className="flex items-center justify-center">
               <ProductGallery
@@ -35,24 +35,24 @@ export default async function BlueProductPage() {
             </div>
 
             {/* Right: Product Info */}
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
-                <p className="font-body text-sm uppercase tracking-[0.3em] text-neon-cyan/70 mb-2">
+                <p className="font-body text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-neon-cyan/70 mb-2">
                   Post-Round Recovery
                 </p>
-                <h1 className="font-display text-4xl lg:text-5xl font-bold text-neon-cyan tracking-wider">
+                <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-neon-cyan tracking-wider break-words">
                   SWZZLE BLUE LINIMENT
                 </h1>
-                <p className="font-display text-xl text-neon-cyan/60 mt-1 tracking-widest">
+                <p className="font-display text-lg sm:text-xl text-neon-cyan/60 mt-1 tracking-wide sm:tracking-widest">
                   | Cool Down
                 </p>
               </div>
 
-              <p className="font-display text-3xl font-bold text-foreground">
+              <p className="font-display text-2xl sm:text-3xl font-bold text-foreground">
                 ${product.price}
               </p>
 
-              <p className="font-body text-foreground/80 leading-relaxed text-lg">
+              <p className="font-body text-foreground/80 leading-relaxed text-base sm:text-lg">
                 {product.shortDescription}
               </p>
 

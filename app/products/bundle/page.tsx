@@ -26,46 +26,48 @@ export default async function BundleProductPage() {
     <main className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-28">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 lg:py-28">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left: Both Product Images */}
-            <div className="flex items-center justify-center gap-4">
-              <div className="relative w-[220px] h-[360px] -rotate-3">
+            <div className="flex items-center justify-center gap-3 sm:gap-4">
+              <div className="relative w-[140px] sm:w-[180px] md:w-[220px] aspect-[3/5] -rotate-3">
                 <Image
                   src={redImage}
                   alt="Swzzle Red Liniment"
                   fill
                   className="object-cover rounded-xl drop-shadow-[0_0_30px_rgba(255,32,32,0.3)]"
                   priority
+                  sizes="(max-width: 640px) 140px, (max-width: 768px) 180px, 220px"
                 />
               </div>
-              <div className="relative w-[220px] h-[360px] rotate-3">
+              <div className="relative w-[140px] sm:w-[180px] md:w-[220px] aspect-[3/5] rotate-3">
                 <Image
                   src={blueImage}
                   alt="Swzzle Blue Liniment"
                   fill
                   className="object-cover rounded-xl drop-shadow-[0_0_30px_rgba(0,245,255,0.3)]"
                   priority
+                  sizes="(max-width: 640px) 140px, (max-width: 768px) 180px, 220px"
                 />
               </div>
             </div>
 
             {/* Right: Product Info */}
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
-                <p className="font-body text-sm uppercase tracking-[0.3em] text-neon-purple/70 mb-2">
+                <p className="font-body text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-neon-purple/70 mb-2">
                   Complete Warm-Up + Cool-Down System
                 </p>
-                <h1 className="font-display text-4xl lg:text-5xl font-bold text-neon-purple tracking-wider">
+                <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-neon-purple tracking-wider break-words">
                   SWZZLE BUNDLE
                 </h1>
-                <p className="font-display text-xl text-neon-purple/60 mt-1 tracking-widest">
+                <p className="font-display text-lg sm:text-xl text-neon-purple/60 mt-1 tracking-wide sm:tracking-widest">
                   | The Complete System
                 </p>
               </div>
 
-              <div className="flex items-baseline gap-4">
-                <p className="font-display text-3xl font-bold text-foreground">
+              <div className="flex flex-wrap items-baseline gap-3">
+                <p className="font-display text-2xl sm:text-3xl font-bold text-foreground">
                   ${product.price}
                 </p>
                 <p className="font-body text-sm text-neon-purple/80 line-through decoration-neon-purple/40">
@@ -76,7 +78,7 @@ export default async function BundleProductPage() {
                 </span>
               </div>
 
-              <p className="font-body text-foreground/80 leading-relaxed text-lg">
+              <p className="font-body text-foreground/80 leading-relaxed text-base sm:text-lg">
                 {product.shortDescription}
               </p>
 
