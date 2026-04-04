@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { put, del } from '@vercel/blob';
+import fs from 'fs';
+import path from 'path';
+
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+
+function ensureUploadDir(subfolder: string) {
+  const dir = path.join(UPLOAD_DIR, subfolder);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  return dir;
+}
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated())) {
@@ -24,23 +35,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Max 10MB
     if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json({ error: 'File too large. Max 10MB.' }, { status: 400 });
     }
 
+    const dir = ensureUploadDir(folder);
     const ext = file.name.split('.').pop() || 'png';
-    const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const filepath = path.join(dir, filename);
 
-    const blob = await put(filename, file, {
-      access: 'public',
-      addRandomSuffix: false,
-    });
+    const buffer = Buffer.from(await file.arrayBuffer());
+    fs.writeFileSync(filepath, buffer);
 
-    return NextResponse.json({ url: blob.url });
+    const url = `/uploads/${folder}/${filename}`;
+    return NextResponse.json({ url });
   } catch (error) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    return NextResponse.json(
+      { error: `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}` },
+      { status: 500 }
+    );
   }
 }
 
@@ -51,11 +65,15 @@ export async function DELETE(request: Request) {
 
   try {
     const { url } = await request.json();
-    if (!url) {
-      return NextResponse.json({ error: 'No URL provided' }, { status: 400 });
+    if (!url || !url.startsWith('/uploads/')) {
+      return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
     }
 
-    await del(url);
+    const filepath = path.join(process.cwd(), 'public', url);
+    if (fs.existsSync(filepath)) {
+      fs.unlinkSync(filepath);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete error:', error);
