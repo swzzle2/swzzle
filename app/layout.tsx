@@ -1,56 +1,40 @@
-import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
+import type { Metadata } from "next";
+import { Orbitron, Exo_2 } from "next/font/google";
 import "./globals.css";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+  display: "swap",
 });
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#b600ff",
-};
+const exo2 = Exo_2({
+  subsets: ["latin"],
+  variable: "--font-exo2",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "SWZZLE — The World's Most Savage Crypto Trading AI",
-  description: "Real-time AI-powered crypto trading. Watch the machine print money.",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "SWZZLE",
-  },
-  icons: {
-    icon: "/icon-192.svg",
-    apple: "/icon-192.svg",
-  },
+  title: "Swzzle Liniment — Built From The Same Dirt We Play On",
+  description:
+    "Swzzle builds the simplest, most effective tools to turn any standard-issue human body into a high-performance machine. Engineered for athletes, made in McConnelsville, Ohio.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#b600ff" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="SWZZLE" />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+    <html lang="en" className={`${orbitron.variable} ${exo2.variable}`}>
+      <body className="font-body bg-background text-foreground min-h-screen flex flex-col">
+        <AnnouncementBar />
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

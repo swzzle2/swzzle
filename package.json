@@ -2,6 +2,7 @@
   "name": "swzzle-site",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,13 +10,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.15.0",
-    "@supabase/supabase-js": "^2.99.3",
+    "@stripe/stripe-js": "^9.0.1",
+    "framer-motion": "^12.38.0",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",
-    "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1"
+    "stripe": "^22.0.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@types/node": "^20",

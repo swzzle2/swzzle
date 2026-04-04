@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /hq
+Disallow: /api/
+
+Sitemap: https://swzzle.com/sitemap.xml

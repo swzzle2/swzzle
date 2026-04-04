@@ -9,35 +9,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        neon: {
-          purple: "#b600ff",
-          cyan: "#00f5ff",
-          pink: "#ff0099",
-          green: "#00ff88",
-          orange: "#ff6600",
-        },
+        background: "#050508",
+        foreground: "#f0f0f0",
+        "neon-red": "#FF2020",
+        "neon-cyan": "#00F5FF",
+        "neon-purple": "#b600ff",
+        surface: "#0a0a10",
+        "surface-light": "#12121a",
+        border: "#1a1a2e",
       },
       fontFamily: {
-        mono: ["var(--font-mono)", "monospace"],
+        display: ["var(--font-orbitron)", "sans-serif"],
+        body: ["var(--font-exo2)", "sans-serif"],
       },
       animation: {
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "glow-pulse": "glowPulse 2s ease-in-out infinite",
-        "scan-line": "scanLine 4s linear infinite",
+        "glow-red": "glowRed 2s ease-in-out infinite",
+        "glow-cyan": "glowCyan 2s ease-in-out infinite",
         "float": "float 6s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
-        "ticker": "ticker 30s linear infinite",
       },
       keyframes: {
-        glowPulse: {
-          "0%, 100%": { textShadow: "0 0 20px #b600ff, 0 0 40px #b600ff, 0 0 80px #b600ff" },
-          "50%": { textShadow: "0 0 40px #00f5ff, 0 0 80px #00f5ff, 0 0 120px #00f5ff" },
+        glowRed: {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(255,32,32,0.3), 0 0 40px rgba(255,32,32,0.1)" },
+          "50%": { boxShadow: "0 0 30px rgba(255,32,32,0.5), 0 0 60px rgba(255,32,32,0.2)" },
         },
-        scanLine: {
-          "0%": { transform: "translateY(-100%)" },
-          "100%": { transform: "translateY(100vh)" },
+        glowCyan: {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(0,245,255,0.3), 0 0 40px rgba(0,245,255,0.1)" },
+          "50%": { boxShadow: "0 0 30px rgba(0,245,255,0.5), 0 0 60px rgba(0,245,255,0.2)" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
@@ -47,15 +46,6 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% center" },
           "100%": { backgroundPosition: "200% center" },
         },
-        ticker: {
-          "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
-      },
-      backgroundImage: {
-        "cosmic": "radial-gradient(ellipse at top, #0a0015 0%, #000000 50%, #000814 100%)",
-        "neon-grid": "linear-gradient(rgba(182,0,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(182,0,255,0.05) 1px, transparent 1px)",
-        "card-glow": "linear-gradient(135deg, rgba(182,0,255,0.1) 0%, rgba(0,245,255,0.05) 50%, rgba(255,0,153,0.1) 100%)",
       },
     },
   },
