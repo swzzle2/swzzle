@@ -1,24 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPost, getPublishedPosts } from '@/lib/posts';
+import { readData } from '@/lib/data-store';
+import type { Post } from '@/lib/posts';
 
-export function generateStaticParams() {
-  return getPublishedPosts().map((post) => ({
-    slug: post.slug,
-  }));
-}
+export const dynamic = 'force-dynamic';
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = getPost(params.slug);
-  if (!post) return { title: 'Post Not Found' };
-  return {
-    title: `${post.title} — Swzzle Blog`,
-    description: post.excerpt,
-  };
-}
-
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  const post = getPost(params.slug);
+export default async function BlogPost({ params }: { params: { slug: string } }) {
+  const posts = await readData<Post[]>('posts.json');
+  const post = posts.find((p) => p.slug === params.slug && p.status === 'published');
   if (!post) notFound();
 
   const paragraphs = post.body.split('\n\n').filter(Boolean);

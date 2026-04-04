@@ -1,16 +1,20 @@
-import { getProduct } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { VitruvianMan } from '@/components/VitruvianMan';
 import { ProductGallery } from '@/components/ProductGallery';
+import { readData } from '@/lib/data-store';
+import type { Product } from '@/lib/products';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'SWZZLE RED LINIMENT | Warm Up',
   description: 'Capsaicin-driven pre-round heat engine for athletes.',
 };
 
-export default function RedProductPage() {
-  const product = getProduct('red');
+export default async function RedProductPage() {
+  const products = await readData<Product[]>('products.json');
+  const product = products.find((p) => p.id === 'red');
   if (!product) return notFound();
 
   const ingredients = product.ingredients.split(',').map((s) => s.trim());

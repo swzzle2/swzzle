@@ -1,16 +1,20 @@
-import { getProduct } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { VitruvianMan } from '@/components/VitruvianMan';
 import { ProductGallery } from '@/components/ProductGallery';
+import { readData } from '@/lib/data-store';
+import type { Product } from '@/lib/products';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'SWZZLE BLUE LINIMENT | Cool Down',
   description: 'Menthol-driven post-round recovery for athletes.',
 };
 
-export default function BlueProductPage() {
-  const product = getProduct('blue');
+export default async function BlueProductPage() {
+  const products = await readData<Product[]>('products.json');
+  const product = products.find((p) => p.id === 'blue');
   if (!product) return notFound();
 
   const ingredients = product.ingredients.split(',').map((s) => s.trim());

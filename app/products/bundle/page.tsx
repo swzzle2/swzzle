@@ -1,17 +1,21 @@
-import { getProduct } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { VitruvianMan } from '@/components/VitruvianMan';
 import { ProductGallery } from '@/components/ProductGallery';
+import { readData } from '@/lib/data-store';
+import type { Product } from '@/lib/products';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'SWZZLE BUNDLE | The Complete System',
   description: 'The full pre-round and post-round liniment system. Save $5.',
 };
 
-export default function BundleProductPage() {
-  const product = getProduct('bundle');
+export default async function BundleProductPage() {
+  const products = await readData<Product[]>('products.json');
+  const product = products.find((p) => p.id === 'bundle');
   if (!product) return notFound();
 
   return (

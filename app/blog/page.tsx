@@ -1,15 +1,19 @@
 import Link from 'next/link';
-import { getPublishedPosts } from '@/lib/posts';
+import { readData } from '@/lib/data-store';
+import type { Post } from '@/lib/posts';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Blog — Swzzle Liniment',
   description: 'Field notes, formulation updates, and stories from the course.',
 };
 
-export default function BlogIndex() {
-  const posts = getPublishedPosts().sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+export default async function BlogIndex() {
+  const allPosts = await readData<Post[]>('posts.json');
+  const posts = allPosts
+    .filter((p) => p.status === 'published')
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-16">
