@@ -60,14 +60,23 @@ export default async function DashboardPage() {
               Command Center
             </p>
           </div>
-          <form action="/api/auth/logout" method="POST">
-            <button
-              type="submit"
-              className="text-sm text-foreground/40 hover:text-neon-red font-body transition-colors"
+          <div className="flex items-center gap-4">
+            <a
+              href="/"
+              target="_blank"
+              className="text-sm text-foreground/40 hover:text-neon-cyan font-body transition-colors"
             >
+              View Site &rarr;
+            </a>
+            <form action="/api/auth/logout" method="POST">
+              <button
+                type="submit"
+                className="text-sm text-foreground/40 hover:text-neon-red font-body transition-colors"
+              >
               Logout
             </button>
-          </form>
+            </form>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
