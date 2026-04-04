@@ -15,7 +15,12 @@ export const metadata = {
 export default async function BundleProductPage() {
   const products = await readData<Product[]>('products.json');
   const product = products.find((p) => p.id === 'bundle');
+  const redProduct = products.find((p) => p.id === 'red');
+  const blueProduct = products.find((p) => p.id === 'blue');
   if (!product) return notFound();
+
+  const redImage = redProduct?.image || '/labels/red-label.svg';
+  const blueImage = blueProduct?.image || '/labels/blue-label.svg';
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -27,19 +32,19 @@ export default async function BundleProductPage() {
             <div className="flex items-center justify-center gap-4">
               <div className="relative w-[220px] h-[360px] -rotate-3">
                 <Image
-                  src="/labels/red-label.svg"
+                  src={redImage}
                   alt="Swzzle Red Liniment"
                   fill
-                  className="object-contain drop-shadow-[0_0_30px_rgba(255,32,32,0.3)]"
+                  className="object-cover rounded-xl drop-shadow-[0_0_30px_rgba(255,32,32,0.3)]"
                   priority
                 />
               </div>
               <div className="relative w-[220px] h-[360px] rotate-3">
                 <Image
-                  src="/labels/blue-label.svg"
+                  src={blueImage}
                   alt="Swzzle Blue Liniment"
                   fill
-                  className="object-contain drop-shadow-[0_0_30px_rgba(0,245,255,0.3)]"
+                  className="object-cover rounded-xl drop-shadow-[0_0_30px_rgba(0,245,255,0.3)]"
                   priority
                 />
               </div>
