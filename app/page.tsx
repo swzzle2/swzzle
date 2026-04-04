@@ -83,6 +83,12 @@ export default async function HomePage() {
               Get Blue
             </Link>
           </div>
+          <Link
+            href="/products/bundle"
+            className="mt-4 border-2 border-neon-purple text-neon-purple font-display font-bold uppercase tracking-wider px-10 py-4 rounded hover:bg-neon-purple/10 transition-all duration-300"
+          >
+            Get Bundle — Save $5
+          </Link>
         </div>
       </section>
 
