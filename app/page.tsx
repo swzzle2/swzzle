@@ -95,25 +95,27 @@ export default async function HomePage() {
               <Link
                 key={p.id}
                 href={`/products/${p.id}`}
-                className={`border ${style.borderClass} rounded-xl p-8 bg-surface hover:scale-[1.02] transition-all duration-300 flex flex-col items-center text-center group`}
+                className={`border ${style.borderClass} rounded-xl overflow-hidden bg-surface hover:scale-[1.02] transition-all duration-300 flex flex-col text-center group`}
               >
-                <div className="w-40 h-52 relative mb-6">
+                <div className="relative w-full aspect-square bg-black/30">
                   <Image
                     src={p.image}
                     alt={p.name}
                     fill
-                    className="object-contain"
+                    className="object-cover"
                   />
                 </div>
-                <h3 className={`font-display font-black text-xl tracking-wider ${style.textClass}`}>
-                  {p.name.toUpperCase()}
-                </h3>
-                <p className="text-gray-500 text-sm font-display uppercase tracking-wider mt-1">
-                  {p.descriptor}
-                </p>
-                <p className={`font-display font-bold text-2xl mt-4 ${style.textClass}`}>
-                  ${p.price}
-                </p>
+                <div className="p-6">
+                  <h3 className={`font-display font-black text-xl tracking-wider ${style.textClass}`}>
+                    {p.name.toUpperCase()}
+                  </h3>
+                  <p className="text-gray-500 text-sm font-display uppercase tracking-wider mt-1">
+                    {p.descriptor}
+                  </p>
+                  <p className={`font-display font-bold text-2xl mt-3 ${style.textClass}`}>
+                    ${p.price}
+                  </p>
+                </div>
               </Link>
             );
           })}

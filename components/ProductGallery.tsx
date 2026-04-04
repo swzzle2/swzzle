@@ -21,7 +21,7 @@ export function ProductGallery({
     <div className="flex flex-col items-center gap-4">
       {/* Main display */}
       <div
-        className="relative w-[280px] h-[400px] rounded-lg overflow-hidden"
+        className="relative w-full max-w-[420px] aspect-[3/4] rounded-lg overflow-hidden"
         style={{ filter: `drop-shadow(0 0 40px ${color}30)` }}
       >
         <Image
