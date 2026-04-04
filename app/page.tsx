@@ -87,7 +87,7 @@ export default async function HomePage() {
             href="/products/bundle"
             className="mt-4 border-2 border-neon-purple text-neon-purple font-display font-bold uppercase tracking-wider px-10 py-4 rounded hover:bg-neon-purple/10 transition-all duration-300"
           >
-            Get Bundle — Save $5
+            Get Bundle
           </Link>
         </div>
       </section>
@@ -186,13 +186,13 @@ export default async function HomePage() {
         </h2>
         <p className="text-gray-400 max-w-xl mx-auto mb-8">
           Running a tournament? Get Swzzle into every player&apos;s bag.
-          TD player packs at wholesale pricing. $18/unit, minimum 24 units.
+          TD player packs at wholesale pricing. MOQ 24 single units or 12 bundles.
         </p>
         <a
           href="mailto:hello@swzzle.com?subject=Tournament%20Player%20Packs"
           className="inline-block border-2 border-neon-purple text-neon-purple font-display font-bold uppercase tracking-wider px-10 py-4 rounded hover:bg-neon-purple/10 transition-all duration-300"
         >
-          Get Tournament Pricing
+          Contact For Wholesale
         </a>
       </section>
     </div>
