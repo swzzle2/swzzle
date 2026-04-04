@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       try {
         const { put } = await import('@vercel/blob');
-        const buffer = await file.arrayBuffer();
+        const buffer = Buffer.from(await file.arrayBuffer());
         const blob = await put(filename, buffer, {
           access: 'public',
           addRandomSuffix: false,
