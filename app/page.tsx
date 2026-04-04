@@ -54,7 +54,7 @@ export default async function HomePage() {
 
         <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto">
           {/* Logo */}
-          <div className="relative w-[300px] md:w-[500px] lg:w-[600px] h-auto mb-6">
+          <div className="relative w-full max-w-[300px] md:max-w-[500px] lg:max-w-[600px] h-auto mb-6 px-4">
             <Image
               src="/logo.png"
               alt="Swzzle"

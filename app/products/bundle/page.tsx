@@ -29,25 +29,25 @@ export default async function BundleProductPage() {
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left: Both Product Images */}
-            <div className="flex items-center justify-center gap-3 sm:gap-4">
-              <div className="relative w-[140px] sm:w-[180px] md:w-[220px] aspect-[3/5] -rotate-3">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 w-full max-w-md mx-auto overflow-hidden">
+              <div className="relative w-[42%] aspect-[3/5] -rotate-3 rounded-xl overflow-hidden">
                 <Image
                   src={redImage}
                   alt="Swzzle Red Liniment"
                   fill
-                  className="object-cover rounded-xl drop-shadow-[0_0_30px_rgba(255,32,32,0.3)]"
+                  className="object-cover drop-shadow-[0_0_30px_rgba(255,32,32,0.3)]"
                   priority
-                  sizes="(max-width: 640px) 140px, (max-width: 768px) 180px, 220px"
+                  sizes="(max-width: 768px) 40vw, 220px"
                 />
               </div>
-              <div className="relative w-[140px] sm:w-[180px] md:w-[220px] aspect-[3/5] rotate-3">
+              <div className="relative w-[42%] aspect-[3/5] rotate-3 rounded-xl overflow-hidden">
                 <Image
                   src={blueImage}
                   alt="Swzzle Blue Liniment"
                   fill
-                  className="object-cover rounded-xl drop-shadow-[0_0_30px_rgba(0,245,255,0.3)]"
+                  className="object-cover drop-shadow-[0_0_30px_rgba(0,245,255,0.3)]"
                   priority
-                  sizes="(max-width: 640px) 140px, (max-width: 768px) 180px, 220px"
+                  sizes="(max-width: 768px) 40vw, 220px"
                 />
               </div>
             </div>
