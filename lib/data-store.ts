@@ -28,7 +28,8 @@ async function blobGet(filename: string): Promise<string | null> {
   try {
     // If we have a cached URL from a previous write, use it directly
     if (blobUrlCache[filename]) {
-      const res = await fetch(blobUrlCache[filename], { cache: 'no-store' });
+      const bustUrl = `${blobUrlCache[filename]}?t=${Date.now()}`;
+      const res = await fetch(bustUrl, { cache: 'no-store' });
       if (res.ok) return await res.text();
     }
 
@@ -40,7 +41,8 @@ async function blobGet(filename: string): Promise<string | null> {
     if (!match) return null;
 
     blobUrlCache[filename] = match.url;
-    const res = await fetch(match.url, { cache: 'no-store' });
+    const bustUrl = `${match.url}?t=${Date.now()}`;
+    const res = await fetch(bustUrl, { cache: 'no-store' });
     if (!res.ok) return null;
     return await res.text();
   } catch (err) {
