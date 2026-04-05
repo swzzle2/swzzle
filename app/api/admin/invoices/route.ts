@@ -59,71 +59,19 @@ export async function POST(request: Request) {
     };
 
     if (!customerName || !customerEmail || !companyName || !items?.length) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const stripe = getStripe();
-
-    // 1. Always create a NEW Stripe customer for wholesale invoices
-    //    Reusing existing customers causes auto-collection if they have
-    //    saved payment methods from retail purchases
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const newCustomer = await stripe.customers.create({
-      email: customerEmail,
-      name: customerName,
-      metadata: { company: companyName, source: 'wholesale_invoice' },
-    } as any);
-    const customerId = newCustomer.id;
-
-    // 2. Create invoice items — use `amount` (total in cents for the line)
-    //    Stripe invoiceItems.create uses `amount` not `unit_amount`
-    for (const item of items) {
-      const lineTotal = item.unitPrice * item.quantity;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await stripe.invoiceItems.create({
-        customer: customerId,
-        amount: lineTotal,
-        currency: 'usd',
-        description: `${item.name} (${item.quantity} × $${(item.unitPrice / 100).toFixed(2)})`,
-      } as any);
-    }
-
-    // 3. Add shipping if > 0
-    if (shippingCost > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await stripe.invoiceItems.create({
-        customer: customerId,
-        amount: shippingCost,
-        currency: 'usd',
-        description: 'Shipping',
-      } as any);
-    }
-
-    // 4. Create the Stripe invoice
-    //    auto_advance: false prevents Stripe from auto-collecting even if customer has saved payment
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const stripeInvoice = await stripe.invoices.create({
-      customer: customerId,
-      collection_method: 'send_invoice',
-      days_until_due: daysUntilDue || 30,
-      auto_advance: false,
-      description: memo || undefined,
-      metadata: { source: 'wholesale_hq' },
-    } as any);
-
-    // 5. Calculate totals
+    // Calculate totals
     const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
     const total = subtotal + (shippingCost || 0);
 
-    // 6. Save local record
+    // Save local record as draft (no Stripe object yet — created on send)
     const now = new Date().toISOString();
     const invoice: WholesaleInvoice = {
       id: `inv_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-      stripeInvoiceId: stripeInvoice.id,
-      stripeCustomerId: customerId,
+      stripeInvoiceId: '', // set on send
+      stripeCustomerId: '',
       customerName,
       customerEmail,
       companyName,

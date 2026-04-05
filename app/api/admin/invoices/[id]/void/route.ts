@@ -14,34 +14,34 @@ export async function POST(
 
   try {
     const { id } = await params;
-    const invoices = await readData<WholesaleInvoice[]>('invoices.json');
-    const index = invoices.findIndex((inv) => inv.id === id);
+    let invoices: WholesaleInvoice[] = [];
+    try {
+      invoices = await readData<WholesaleInvoice[]>('invoices.json');
+    } catch {
+      return NextResponse.json({ error: 'No invoices found' }, { status: 404 });
+    }
 
+    const index = invoices.findIndex((inv) => inv.id === id);
     if (index === -1) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }
 
-    const invoice = invoices[index];
-
-    if (invoice.status === 'void') {
-      return NextResponse.json({ error: 'Invoice is already voided' }, { status: 400 });
-    }
-
-    if (invoice.status === 'paid') {
+    if (invoices[index].status === 'paid') {
       return NextResponse.json({ error: 'Cannot void a paid invoice' }, { status: 400 });
     }
 
-    const stripe = getStripe();
+    // Expire the Stripe checkout session if one exists
+    if (invoices[index].stripeInvoiceId) {
+      try {
+        const stripe = getStripe();
+        await stripe.checkout.sessions.expire(invoices[index].stripeInvoiceId);
+      } catch {
+        // Session may already be expired or completed
+      }
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await stripe.invoices.voidInvoice(invoice.stripeInvoiceId) as any;
-
-    invoices[index] = {
-      ...invoice,
-      status: 'void',
-      updatedAt: new Date().toISOString(),
-    };
-
+    invoices[index].status = 'void';
+    invoices[index].updatedAt = new Date().toISOString();
     await writeData('invoices.json', invoices);
 
     return NextResponse.json(invoices[index]);

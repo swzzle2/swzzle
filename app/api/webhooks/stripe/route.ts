@@ -42,14 +42,7 @@ export async function POST(request: Request) {
     }
   }
 
-  if (event.type === 'invoice.paid') {
-    try {
-      await handleInvoicePaid(event.data.object as Stripe.Invoice);
-    } catch (err) {
-      console.error('Error handling invoice.paid:', err);
-      return new Response('Webhook handler error', { status: 500 });
-    }
-  }
+  // invoice.paid no longer used — wholesale uses checkout.session.completed
 
   return new Response('OK', { status: 200 });
 }
@@ -117,101 +110,58 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     updatedAt: now,
   };
 
+  // Check if this is a wholesale invoice payment
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const metadata = (session as any).metadata || {};
+  const isWholesale = metadata.source === 'wholesale_hq';
+  const invoiceId = metadata.invoiceId;
+  const companyName = metadata.companyName || '';
+
+  if (isWholesale) {
+    order.notes = `Wholesale invoice for ${companyName}`;
+  }
+
   existingOrders.push(order);
   await writeData('orders.json', existingOrders);
-  console.log('Order created:', order.id);
+  console.log('Order created:', order.id, isWholesale ? '(wholesale)' : '(retail)');
 
-  // Send confirmation email
+  // If wholesale, link the order back to the invoice record
+  if (isWholesale && invoiceId) {
+    try {
+      const invoices = await readData<WholesaleInvoice[]>('invoices.json');
+      const invIndex = invoices.findIndex((inv) => inv.id === invoiceId);
+      if (invIndex !== -1) {
+        invoices[invIndex].status = 'paid';
+        invoices[invIndex].orderId = order.id;
+        invoices[invIndex].updatedAt = new Date().toISOString();
+        await writeData('invoices.json', invoices);
+        console.log('Invoice marked paid:', invoiceId);
+      }
+    } catch (err) {
+      console.error('Failed to update invoice record:', err);
+    }
+  }
+
+  // Send appropriate email
   if (customerEmail) {
     try {
-      await sendEmail({
-        to: customerEmail,
-        subject: `Order Confirmed - ${order.id}`,
-        html: orderConfirmationHtml(order),
-      });
+      if (isWholesale) {
+        await sendEmail({
+          to: customerEmail,
+          subject: `Payment Received - Wholesale Order for ${companyName}`,
+          html: wholesalePaymentReceivedHtml(order, companyName),
+        });
+      } else {
+        await sendEmail({
+          to: customerEmail,
+          subject: `Order Confirmed - ${order.id}`,
+          html: orderConfirmationHtml(order),
+        });
+      }
     } catch (err) {
-      console.error('Failed to send order confirmation email:', err);
-      // Don't fail the webhook if email fails
+      console.error('Failed to send email:', err);
     }
   }
 }
 
-async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const invoiceObj = stripeInvoice as any;
-
-  // Only handle invoices created from wholesale HQ
-  if (invoiceObj.metadata?.source !== 'wholesale_hq') {
-    return;
-  }
-
-  const invoices = await readData<WholesaleInvoice[]>('invoices.json');
-  const index = invoices.findIndex((inv) => inv.stripeInvoiceId === stripeInvoice.id);
-
-  if (index === -1) {
-    console.log('No local invoice record found for Stripe invoice:', stripeInvoice.id);
-    return;
-  }
-
-  const invoice = invoices[index];
-
-  // Idempotency: skip if already paid
-  if (invoice.status === 'paid') {
-    console.log('Invoice already marked as paid:', invoice.id);
-    return;
-  }
-
-  // Create an Order record
-  const existingOrders = await readData<Order[]>('orders.json');
-  const now = new Date().toISOString();
-
-  const orderItems: OrderItem[] = invoice.items.map((item) => ({
-    productId: item.productId || '',
-    name: item.name,
-    quantity: item.quantity,
-    unitAmount: item.unitPrice,
-  }));
-
-  const order: Order = {
-    id: `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-    stripeSessionId: stripeInvoice.id, // use invoice ID for traceability
-    customerEmail: invoice.customerEmail,
-    customerName: invoice.customerName,
-    items: orderItems,
-    amountTotal: invoiceObj.amount_paid || invoice.total,
-    currency: invoice.currency,
-    status: 'paid',
-    notes: `Wholesale invoice for ${invoice.companyName}`,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  existingOrders.push(order);
-  await writeData('orders.json', existingOrders);
-  console.log('Wholesale order created:', order.id, 'from invoice:', invoice.id);
-
-  // Update the invoice record
-  invoices[index] = {
-    ...invoice,
-    status: 'paid',
-    orderId: order.id,
-    hostedUrl: invoiceObj.hosted_invoice_url || invoice.hostedUrl,
-    pdfUrl: invoiceObj.invoice_pdf || invoice.pdfUrl,
-    updatedAt: now,
-  };
-
-  await writeData('invoices.json', invoices);
-
-  // Send payment received email (not order confirmation — they need to know we're prepping)
-  if (invoice.customerEmail) {
-    try {
-      await sendEmail({
-        to: invoice.customerEmail,
-        subject: `Payment Received - Wholesale Order for ${invoice.companyName}`,
-        html: wholesalePaymentReceivedHtml(order, invoice.companyName),
-      });
-    } catch (err) {
-      console.error('Failed to send wholesale payment confirmation:', err);
-    }
-  }
-}
+// handleInvoicePaid removed — wholesale now uses checkout.session.completed
