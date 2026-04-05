@@ -9,7 +9,7 @@ export function Footer() {
           <div>
             <span className="font-display font-black text-2xl tracking-wider text-foreground">SWZZLE</span>
             <p className="text-gray-500 text-sm mt-2 font-body">
-              Built From The Same Dirt We Play On
+              Science Wins... You Can, Too!
             </p>
             <p className="text-gray-600 text-xs mt-1 font-body">
               McConnelsville, Ohio

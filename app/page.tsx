@@ -85,7 +85,7 @@ export default async function HomePage() {
           </div>
 
           <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-10">
-            Built From The Same Dirt We Play On
+            Science Wins... You Can, Too!
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">

@@ -1,7 +1,7 @@
 export const metadata = {
   title: 'About — Swzzle Liniment',
   description:
-    'The story behind Swzzle. Built from the same dirt we play on, in McConnelsville, Ohio.',
+    'The story behind Swzzle. Science wins... you can, too. Made in McConnelsville, Ohio.',
 };
 
 export default function AboutPage() {
@@ -13,7 +13,7 @@ export default function AboutPage() {
         </h1>
 
         <p className="font-display text-sm uppercase tracking-[0.3em] text-neon-red/80 mb-16">
-          Built From The Same Dirt We Play On
+          Science Wins... You Can, Too!
         </p>
 
         {/* Founder's Note */}
