@@ -65,7 +65,7 @@ export default async function HomePage() {
   return (
     <div className="star-field">
       {/* HERO */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center px-4 py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-cyan/5 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-red/5 rounded-full blur-3xl" />
@@ -84,7 +84,7 @@ export default async function HomePage() {
             />
           </div>
 
-          <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-10">
+          <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-6">
             Science Wins... You Can, Too!
           </p>
 
