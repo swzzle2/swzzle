@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
+import { ContactForm } from '@/components/ContactForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -247,12 +248,7 @@ export default async function HomePage() {
           Running a tournament? Get Swzzle into every player&apos;s bag.
           TD player packs at wholesale pricing. MOQ 24 single units or 12 bundles.
         </p>
-        <a
-          href="mailto:hello@swzzle.com?subject=Tournament%20Player%20Packs"
-          className="inline-block border-2 border-neon-purple text-neon-purple font-display font-bold uppercase tracking-wider px-10 py-4 rounded hover:bg-neon-purple/10 transition-all duration-300"
-        >
-          Contact For Wholesale
-        </a>
+        <ContactForm subject="TD Wholesale Inquiry" buttonText="Contact For Wholesale" />
       </section>
     </div>
   );
