@@ -47,20 +47,33 @@ export function Navbar() {
           <AccountMenu />
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-foreground p-2"
-          aria-label="Menu"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {menuOpen ? (
-              <path d="M6 6l12 12M6 18L18 6" />
-            ) : (
-              <path d="M3 6h18M3 12h18M3 18h18" />
+        {/* Mobile cart + hamburger */}
+        <div className="flex items-center gap-2 md:hidden">
+          <Link href="/cart" className="relative text-foreground p-2">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+            </svg>
+            {mounted && itemCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-neon-red text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                {itemCount}
+              </span>
             )}
-          </svg>
-        </button>
+          </Link>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="text-foreground p-2"
+            aria-label="Menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {menuOpen ? (
+                <path d="M6 6l12 12M6 18L18 6" />
+              ) : (
+                <path d="M3 6h18M3 12h18M3 18h18" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
