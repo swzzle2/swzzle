@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   title: "Swzzle — Science Wins. So Should You.",
   description:
     "Swzzle builds the simplest, most effective tools to turn any standard-issue human body into a high-performance machine. Engineered for athletes, made in McConnelsville, Ohio.",
+  icons: {
+    icon: "/swzzle-icon.png",
+    apple: "/swzzle-icon.png",
+  },
 };
 
 export default function RootLayout({
