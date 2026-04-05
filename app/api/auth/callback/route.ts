@@ -11,18 +11,24 @@ export async function GET(request: Request) {
   const supabase = await createServerSupabase();
 
   if (code) {
-    // OAuth code exchange
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
   } else if (token_hash && type) {
-    // Magic link / email OTP verification
     const { error } = await supabase.auth.verifyOtp({
       token_hash,
-      type: type as 'email' | 'magiclink',
+      type: type as 'email' | 'magiclink' | 'recovery' | 'signup',
     });
     if (!error) {
+      // Password recovery → send to reset page
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${origin}/auth/reset-password`);
+      }
+      // Email confirmation → send to sign in
+      if (type === 'signup' || type === 'email') {
+        return NextResponse.redirect(`${origin}/auth/signin`);
+      }
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

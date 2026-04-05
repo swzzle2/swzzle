@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,23 +11,8 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [ready, setReady] = useState(false);
   const router = useRouter();
   const supabase = createClient();
-
-  useEffect(() => {
-    // Supabase sets session from the URL hash on this page
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setReady(true);
-      }
-    });
-
-    // Also check if already in recovery state
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true);
-    });
-  }, [supabase.auth]);
 
   async function handleReset(e: React.FormEvent) {
     e.preventDefault();
@@ -61,17 +46,6 @@ export default function ResetPasswordPage() {
           <div className="text-neon-cyan text-4xl">&#10003;</div>
           <p className="font-display text-sm uppercase tracking-wider text-neon-cyan">Password updated</p>
           <p className="text-gray-400 text-sm font-body">Redirecting to your account...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!ready) {
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4">
-        <div className="w-full max-w-sm text-center space-y-4">
-          <div className="w-8 h-8 border-2 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 font-display text-sm tracking-wider">Loading...</p>
         </div>
       </div>
     );
