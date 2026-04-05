@@ -4,6 +4,7 @@ import "./globals.css";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { CartToast } from "@/components/CartToast";
 
 
 const orbitron = Orbitron({
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className="font-body bg-background text-foreground min-h-screen flex flex-col">
         <AnnouncementBar />
         <Navbar />
+        <CartToast />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
