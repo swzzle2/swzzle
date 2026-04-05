@@ -67,22 +67,16 @@ export async function POST(request: Request) {
 
     const stripe = getStripe();
 
-    // 1. Find or create Stripe customer
+    // 1. Always create a NEW Stripe customer for wholesale invoices
+    //    Reusing existing customers causes auto-collection if they have
+    //    saved payment methods from retail purchases
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const existingCustomers = await stripe.customers.list({ email: customerEmail, limit: 1 } as any);
-    let customerId: string;
-
-    if (existingCustomers.data.length > 0) {
-      customerId = existingCustomers.data[0].id;
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const newCustomer = await stripe.customers.create({
-        email: customerEmail,
-        name: customerName,
-        metadata: { company: companyName },
-      } as any);
-      customerId = newCustomer.id;
-    }
+    const newCustomer = await stripe.customers.create({
+      email: customerEmail,
+      name: customerName,
+      metadata: { company: companyName, source: 'wholesale_invoice' },
+    } as any);
+    const customerId = newCustomer.id;
 
     // 2. Create invoice items — use `amount` (total in cents for the line)
     //    Stripe invoiceItems.create uses `amount` not `unit_amount`
