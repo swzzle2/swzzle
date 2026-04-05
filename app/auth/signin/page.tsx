@@ -45,7 +45,12 @@ export default function SignInPage() {
           >
             SWZZLE
           </Link>
-          <p className="text-gray-500 text-sm mt-3">Sign in to your account</p>
+          <p className="text-gray-400 text-sm mt-3 font-body">
+            Sign in or create your account
+          </p>
+          <p className="text-gray-600 text-xs mt-1 font-body">
+            No password needed — we&apos;ll email you a secure link
+          </p>
         </div>
 
         {error && (
@@ -68,8 +73,11 @@ export default function SignInPage() {
             <p className="text-foreground font-display text-sm uppercase tracking-wider">
               Check your email
             </p>
-            <p className="text-gray-400 text-sm">
-              We sent a magic link to <span className="text-foreground">{email}</span>
+            <p className="text-gray-400 text-sm font-body">
+              We sent a sign-in link to <span className="text-foreground">{email}</span>
+            </p>
+            <p className="text-gray-600 text-xs font-body">
+              New here? The link will create your account automatically.
             </p>
             <button
               onClick={() => setMagicLinkSent(false)}
@@ -80,7 +88,6 @@ export default function SignInPage() {
           </div>
         ) : (
           <>
-            {/* Magic link form */}
             <form onSubmit={handleMagicLink} className="space-y-4">
               <div>
                 <label
@@ -104,9 +111,13 @@ export default function SignInPage() {
                 disabled={loading}
                 className="w-full border-2 border-neon-cyan text-neon-cyan font-display font-bold uppercase tracking-wider px-4 py-2.5 rounded hover:bg-neon-cyan/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
-                {loading ? 'Sending...' : 'Send Magic Link'}
+                {loading ? 'Sending...' : 'Continue with Email'}
               </button>
             </form>
+
+            <p className="text-center text-xs text-gray-600 font-body">
+              Already have an account? Same thing — enter your email above and we&apos;ll send you a link.
+            </p>
           </>
         )}
 
