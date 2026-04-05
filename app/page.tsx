@@ -5,31 +5,49 @@ import type { Product } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
 
-const mechanisms = [
+const fullStack = [
   {
-    name: 'Castor Oil',
-    detail: 'Ricinoleic acid — deep tissue penetration carrier',
-    icon: '01',
+    category: 'Carriers',
+    color: 'text-neon-cyan',
+    borderColor: 'border-neon-cyan/30',
+    items: [
+      { name: 'Fractionated Coconut Oil', detail: 'The getaway driver. Liquid at room temperature, invisible on skin, and already three layers deep by the time you remember to wash your hands.' },
+      { name: 'Castor Oil', detail: 'The frickin\' delivery truck. Ricinoleic acid doesn\'t knock on the door. It moves in.' },
+      { name: 'Apricot Kernel Oil', detail: 'The only gentleman in the formula. Keeps everything gliding smooth so your application doesn\'t turn into a crime scene.' },
+    ],
   },
   {
-    name: 'Capsaicin',
-    detail: 'Drives blood flow to cold, stiff muscles (Red only)',
-    icon: '02',
+    category: 'Actives',
+    color: 'text-neon-purple',
+    borderColor: 'border-neon-purple/30',
+    items: [
+      { name: 'Menthol Crystals', detail: 'Hits first. Asks questions never. You\'ll know it\'s working approximately four seconds before you\'re ready for it.' },
+      { name: 'Turmeric CO2 Extract', detail: 'Curcumin so concentrated it would embarrass your smoothie. The one that actually showed up to work.' },
+      { name: 'Vitamin E Oil (Tocopherol)', detail: 'So your skin doesn\'t file a formal complaint after the third application this week.' },
+    ],
   },
   {
-    name: 'Turmeric CO2 Extract',
-    detail: 'Curcumin concentrate — the good stuff, not the grocery store powder',
-    icon: '03',
+    category: 'Boosters',
+    color: 'text-foreground',
+    borderColor: 'border-border',
+    items: [
+      { name: 'Camphor Essential Oil', detail: 'Tells your blood vessels to get off the couch. They listen.' },
+      { name: 'Eucalyptus Essential Oil', detail: 'The cool head in a very heated argument. Keeps the icy-hot-love-hate relationship balanced.' },
+      { name: 'Black Pepper Essential Oil', detail: 'Piperine. The bouncer that gets curcumin past the velvet rope and into the club.' },
+      { name: 'Peppermint Essential Oil', detail: 'The sharp one. Icy bite up front, slow burn behind it. Your nerve endings will have opinions.' },
+      { name: 'Ginger Essential Oil', detail: 'Quiet warmth that builds in the background while everything else is making noise.' },
+      { name: 'Rosemary Essential Oil', detail: 'Backup doing real work on soreness while capsaicin and menthol take all the credit.' },
+    ],
   },
   {
-    name: 'Piperine (Black Pepper)',
-    detail: 'Boosts curcumin absorption by up to 2000%',
-    icon: '04',
-  },
-  {
-    name: 'Camphor + Menthol',
-    detail: 'Heat-cool sensation — immediate effect you can feel working',
-    icon: '05',
+    category: 'Thermals',
+    tag: 'Red Only',
+    color: 'text-neon-red',
+    borderColor: 'border-neon-red/30',
+    items: [
+      { name: 'Capsaicin Oleoresin', detail: 'Scoville units of pure intent. This is the get loose juice, the swing lube, the real warm-up before rounds.' },
+      { name: 'Cinnamon Bark Essential Oil', detail: 'Surface heat on contact. The thermal trigger that tells the rest of the formula it\'s time to work.' },
+    ],
   },
 ];
 
@@ -128,26 +146,44 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* THE STACK */}
-      <section className="max-w-4xl mx-auto px-4 py-20">
+      {/* THE SWZZLE FULL STACK */}
+      <section className="max-w-5xl mx-auto px-4 py-20">
         <h2 className="font-display font-black text-3xl md:text-5xl text-center mb-4 tracking-wider">
-          THE STACK
+          THE SWZZLE FULL STACK
         </h2>
         <p className="text-gray-500 text-center mb-16 max-w-xl mx-auto">
-          Five mechanisms. One system. Every ingredient earns its spot or gets cut.
+          Every ingredient earns its spot or gets cut. No filler. No fairy dust. Just function.
         </p>
 
-        <div className="space-y-8">
-          {mechanisms.map((m) => (
-            <div key={m.icon} className="flex items-start gap-6 group">
-              <div className="flex-shrink-0 w-14 h-14 rounded-lg border border-border bg-surface-light flex items-center justify-center font-display font-bold text-neon-cyan text-lg">
-                {m.icon}
-              </div>
-              <div>
-                <h3 className="font-display font-bold text-lg text-foreground group-hover:text-neon-cyan transition-colors">
-                  {m.name}
+        <div className="space-y-12">
+          {fullStack.map((group) => (
+            <div key={group.category}>
+              <div className="flex items-center gap-3 mb-6">
+                <h3 className={`font-display font-black text-xl sm:text-2xl tracking-wider ${group.color}`}>
+                  {group.category.toUpperCase()}
                 </h3>
-                <p className="text-gray-500 text-sm mt-1">{m.detail}</p>
+                {group.tag && (
+                  <span className="font-display text-[10px] font-bold uppercase tracking-widest bg-neon-red/15 text-neon-red border border-neon-red/30 px-2.5 py-0.5 rounded-full">
+                    {group.tag}
+                  </span>
+                )}
+                <div className={`flex-1 h-px ${group.borderColor} border-t`} />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {group.items.map((item) => (
+                  <div
+                    key={item.name}
+                    className={`border ${group.borderColor} rounded-lg p-5 bg-surface hover:bg-surface-light transition-colors`}
+                  >
+                    <h4 className={`font-display font-bold text-sm tracking-wider ${group.color} mb-2`}>
+                      {item.name}
+                    </h4>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      {item.detail}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
