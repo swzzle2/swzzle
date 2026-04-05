@@ -4,6 +4,7 @@ import "./globals.css";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { SessionWrapper } from "@/components/SessionWrapper";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -31,10 +32,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${orbitron.variable} ${exo2.variable}`}>
       <body className="font-body bg-background text-foreground min-h-screen flex flex-col">
-        <AnnouncementBar />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <SessionWrapper>
+          <AnnouncementBar />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </SessionWrapper>
       </body>
     </html>
   );

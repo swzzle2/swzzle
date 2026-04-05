@@ -4,6 +4,7 @@ import { isAuthenticated } from '@/lib/auth';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
 import type { Post } from '@/lib/posts';
+import type { Order } from '@/lib/orders';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,14 +15,15 @@ export default async function DashboardPage() {
 
   const products = await readData<Product[]>('products.json');
   const posts = await readData<Post[]>('posts.json');
+  const orders = await readData<Order[]>('orders.json');
   const activeProducts = products.filter((p) => p.status === 'active').length;
   const publishedPosts = posts.filter((p) => p.status === 'published').length;
 
   const cards = [
     {
       label: 'Orders',
-      value: '--',
-      sub: 'View in Stripe or Orders tab',
+      value: orders.length,
+      sub: `${orders.filter((o) => o.status === 'paid').length} awaiting shipment`,
       color: 'text-neon-cyan',
       borderColor: 'border-neon-cyan/30',
     },
@@ -45,6 +47,7 @@ export default async function DashboardPage() {
     { label: 'Products', href: '/hq/products', icon: '⬡' },
     { label: 'Blog', href: '/hq/blog', icon: '✎' },
     { label: 'Orders', href: '/hq/orders', icon: '◈' },
+    { label: 'Coupons', href: '/hq/coupons', icon: '%' },
     { label: 'Settings', href: '/hq/settings', icon: '⚙' },
   ];
 

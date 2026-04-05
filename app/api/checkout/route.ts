@@ -58,6 +58,7 @@ export async function POST(request: Request) {
     const session = await getStripe().checkout.sessions.create({
       mode: 'payment',
       line_items,
+      allow_promotion_codes: true,
       success_url: `${origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
     });

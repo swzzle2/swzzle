@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCartStore } from '@/lib/cart-store';
 import { useState, useEffect } from 'react';
+import { AccountMenu } from '@/components/AccountMenu';
 
 export function Navbar() {
   const itemCount = useCartStore((s) => s.getItemCount());
@@ -43,6 +44,7 @@ export function Navbar() {
               </span>
             )}
           </Link>
+          <AccountMenu />
         </div>
 
         {/* Mobile hamburger */}
@@ -72,6 +74,7 @@ export function Navbar() {
           <Link href="/cart" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">
             Cart {mounted && itemCount > 0 && `(${itemCount})`}
           </Link>
+          <Link href="/account" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan">Account</Link>
         </div>
       )}
     </nav>

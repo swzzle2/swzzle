@@ -1,10 +1,11 @@
 import Link from 'next/link';
+import { EmailCapture } from '@/components/EmailCapture';
 
 export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="max-w-6xl mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
             <span className="font-display font-black text-2xl tracking-wider text-foreground">SWZZLE</span>
@@ -16,7 +17,7 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Navigation */}
+          {/* Shop */}
           <div className="space-y-2">
             <h4 className="font-display text-sm uppercase tracking-wider text-gray-400 mb-3">Shop</h4>
             <Link href="/products/red" className="block text-sm text-gray-500 hover:text-neon-red transition-colors">Swzzle Red</Link>
@@ -24,12 +25,19 @@ export function Footer() {
             <Link href="/products/bundle" className="block text-sm text-gray-500 hover:text-foreground transition-colors">Bundle</Link>
           </div>
 
-          {/* Links */}
+          {/* Company */}
           <div className="space-y-2">
             <h4 className="font-display text-sm uppercase tracking-wider text-gray-400 mb-3">Company</h4>
             <Link href="/about" className="block text-sm text-gray-500 hover:text-foreground transition-colors">About</Link>
             <Link href="/blog" className="block text-sm text-gray-500 hover:text-foreground transition-colors">Blog</Link>
+            <Link href="/account" className="block text-sm text-gray-500 hover:text-neon-cyan transition-colors">My Account</Link>
             <Link href="/cart" className="block text-sm text-gray-500 hover:text-foreground transition-colors">Cart</Link>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h4 className="font-display text-sm uppercase tracking-wider text-gray-400 mb-3">Stay in the Loop</h4>
+            <EmailCapture />
           </div>
         </div>
 
