@@ -195,23 +195,46 @@ export default async function HomePage() {
         <h2 className="font-display font-black text-2xl md:text-4xl text-center mb-12 tracking-wider">
           WHAT THEY&apos;RE SAYING
         </h2>
-        {/* TODO: Replace with real reviews */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="border border-border rounded-xl p-6 bg-surface">
-              <div className="flex gap-1 mb-3">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <span key={s} className="text-neon-cyan">&#9733;</span>
-                ))}
-              </div>
-              <p className="text-gray-400 text-sm italic mb-4">
-                &ldquo;Review placeholder — real testimonials coming soon.&rdquo;
-              </p>
-              <p className="text-gray-600 text-xs font-display uppercase tracking-wider">
-                — Athlete #{i}
-              </p>
+          <div className="border border-border rounded-xl p-6 bg-surface">
+            <div className="flex gap-1 mb-3">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <span key={s} className="text-neon-cyan">&#9733;</span>
+              ))}
             </div>
-          ))}
+            <p className="text-gray-400 text-sm italic mb-4">
+              &ldquo;Skeptical as hell. I&apos;m a Freeze guy for years. My buddy wouldn&apos;t shut up about this stuff, so I finally put some on before our Sunday round. I hate that it worked.&rdquo;
+            </p>
+            <p className="text-gray-600 text-xs font-display uppercase tracking-wider">
+              — Jim B.
+            </p>
+          </div>
+          <div className="border border-border rounded-xl p-6 bg-surface">
+            <div className="flex gap-1 mb-3">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <span key={s} className="text-neon-cyan">&#9733;</span>
+              ))}
+            </div>
+            <p className="text-gray-400 text-sm italic mb-4">
+              &ldquo;Bought the bundle for my husband. He now hides it from me. We have two bottles of Red and I am not allowed to touch them. Ordering my own.&rdquo;
+            </p>
+            <p className="text-gray-600 text-xs font-display uppercase tracking-wider">
+              — Rachel K.
+            </p>
+          </div>
+          <div className="border border-border rounded-xl p-6 bg-surface">
+            <div className="flex gap-1 mb-3">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <span key={s} className="text-neon-cyan">&#9733;</span>
+              ))}
+            </div>
+            <p className="text-gray-400 text-sm italic mb-4">
+              &ldquo;I&apos;m 46. I play tournaments every month. My arm has been barking at me for a couple of years. I put Red on before my last league and shot fire. Correlation? Maybe. Am I ever playing without it again? Absolutely not.&rdquo;
+            </p>
+            <p className="text-gray-600 text-xs font-display uppercase tracking-wider">
+              — Jeremy G.
+            </p>
+          </div>
         </div>
       </section>
 
