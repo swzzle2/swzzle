@@ -99,12 +99,20 @@ export default function WholesalePage() {
               {inquiries.length} total &middot; {inquiries.filter((i) => i.status === 'new').length} new
             </p>
           </div>
-          <button
-            onClick={exportCSV}
-            className="border border-neon-cyan/30 text-neon-cyan font-display text-xs uppercase tracking-wider px-4 py-2 rounded hover:bg-neon-cyan/10 transition-colors"
-          >
-            Export CSV
-          </button>
+          <div className="flex gap-3">
+            <Link
+              href="/hq/wholesale/invoices"
+              className="bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan font-display text-xs uppercase tracking-wider px-4 py-2 rounded hover:bg-neon-cyan/20 transition-colors"
+            >
+              Invoices
+            </Link>
+            <button
+              onClick={exportCSV}
+              className="border border-neon-cyan/30 text-neon-cyan font-display text-xs uppercase tracking-wider px-4 py-2 rounded hover:bg-neon-cyan/10 transition-colors"
+            >
+              Export CSV
+            </button>
+          </div>
         </div>
 
         {/* Filters */}

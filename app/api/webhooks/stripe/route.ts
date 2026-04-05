@@ -3,6 +3,7 @@ import { readData, writeData } from '@/lib/data-store';
 import { sendEmail, orderConfirmationHtml } from '@/lib/email';
 import type { Order, OrderItem } from '@/lib/orders';
 import type { Customer } from '@/lib/customers';
+import type { WholesaleInvoice } from '@/lib/invoices';
 import type Stripe from 'stripe';
 
 export const runtime = 'nodejs';
@@ -37,6 +38,15 @@ export async function POST(request: Request) {
       await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
     } catch (err) {
       console.error('Error handling checkout.session.completed:', err);
+      return new Response('Webhook handler error', { status: 500 });
+    }
+  }
+
+  if (event.type === 'invoice.paid') {
+    try {
+      await handleInvoicePaid(event.data.object as Stripe.Invoice);
+    } catch (err) {
+      console.error('Error handling invoice.paid:', err);
       return new Response('Webhook handler error', { status: 500 });
     }
   }
@@ -122,6 +132,86 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     } catch (err) {
       console.error('Failed to send order confirmation email:', err);
       // Don't fail the webhook if email fails
+    }
+  }
+}
+
+async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const invoiceObj = stripeInvoice as any;
+
+  // Only handle invoices created from wholesale HQ
+  if (invoiceObj.metadata?.source !== 'wholesale_hq') {
+    return;
+  }
+
+  const invoices = await readData<WholesaleInvoice[]>('invoices.json');
+  const index = invoices.findIndex((inv) => inv.stripeInvoiceId === stripeInvoice.id);
+
+  if (index === -1) {
+    console.log('No local invoice record found for Stripe invoice:', stripeInvoice.id);
+    return;
+  }
+
+  const invoice = invoices[index];
+
+  // Idempotency: skip if already paid
+  if (invoice.status === 'paid') {
+    console.log('Invoice already marked as paid:', invoice.id);
+    return;
+  }
+
+  // Create an Order record
+  const existingOrders = await readData<Order[]>('orders.json');
+  const now = new Date().toISOString();
+
+  const orderItems: OrderItem[] = invoice.items.map((item) => ({
+    productId: item.productId || '',
+    name: item.name,
+    quantity: item.quantity,
+    unitAmount: item.unitPrice,
+  }));
+
+  const order: Order = {
+    id: `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    stripeSessionId: stripeInvoice.id, // use invoice ID for traceability
+    customerEmail: invoice.customerEmail,
+    customerName: invoice.customerName,
+    items: orderItems,
+    amountTotal: invoiceObj.amount_paid || invoice.total,
+    currency: invoice.currency,
+    status: 'paid',
+    notes: `Wholesale invoice for ${invoice.companyName}`,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  existingOrders.push(order);
+  await writeData('orders.json', existingOrders);
+  console.log('Wholesale order created:', order.id, 'from invoice:', invoice.id);
+
+  // Update the invoice record
+  invoices[index] = {
+    ...invoice,
+    status: 'paid',
+    orderId: order.id,
+    hostedUrl: invoiceObj.hosted_invoice_url || invoice.hostedUrl,
+    pdfUrl: invoiceObj.invoice_pdf || invoice.pdfUrl,
+    updatedAt: now,
+  };
+
+  await writeData('invoices.json', invoices);
+
+  // Send confirmation email
+  if (invoice.customerEmail) {
+    try {
+      await sendEmail({
+        to: invoice.customerEmail,
+        subject: `Payment Received - Invoice for ${invoice.companyName}`,
+        html: orderConfirmationHtml(order),
+      });
+    } catch (err) {
+      console.error('Failed to send wholesale payment confirmation:', err);
     }
   }
 }
