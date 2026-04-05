@@ -22,15 +22,50 @@ export default function AboutPage() {
           <h2 className="font-display text-xs uppercase tracking-[0.25em] text-neon-purple/70 mb-6 pl-4">
             Founder&apos;s Note
           </h2>
-          <blockquote className="pl-4 space-y-5">
-            <p className="font-body text-foreground/80 text-lg leading-relaxed italic">
-              &ldquo;I didn&apos;t start Swzzle because I saw a market opportunity. I started
-              it because disc golf gave me something I didn&apos;t know I needed — the
-              feeling of being genuinely alive. The tournament morning alarm that you
-              want to hear. The quiet focus of a pre-round warmup. The way a stranger
-              becomes a playing partner becomes a friend over eighteen holes.&rdquo;
+          <div className="pl-4 space-y-5">
+            <p className="font-body text-foreground/80 text-lg leading-relaxed">
+              I didn&apos;t start Swzzle because I saw a market opportunity...
             </p>
-          </blockquote>
+            <p className="font-body text-foreground/80 text-lg leading-relaxed">
+              I started it because I kept losing tournaments before I ever threw a disc.
+            </p>
+            <p className="font-body text-foreground/80 text-lg leading-relaxed">
+              My mental game was gone before hole 1 because my body had already made the decision.
+            </p>
+            <p className="font-body text-foreground/60 leading-relaxed">
+              Two hours in a car. Cold shoulders, cold elbows, cold knees. Everything hurts when you&apos;re playing the Pro-Masters divisions.
+            </p>
+            <p className="font-body text-foreground/80 text-lg leading-relaxed">
+              I&apos;m a disc golfer. More importantly, I&apos;m a problem solver who got tired of pretending a light stretch was going to fix it.
+            </p>
+            <p className="font-body text-foreground text-xl leading-relaxed font-semibold">
+              So, I made something that works.
+            </p>
+            <p className="font-body text-foreground/60 leading-relaxed">
+              Four mechanisms, zero apologies, and enough capsaicin to make your arm remember it has a job to do.
+            </p>
+            <p className="font-body text-foreground/80 text-lg leading-relaxed">
+              The real warm-up doesn&apos;t happen on the tee pad. It happens in the parking lot, fifteen minutes before your name gets called to the tee.
+            </p>
+            <p className="font-body text-foreground/80 text-lg leading-relaxed">
+              The real recovery needs more than beer, ice, and menthol. It needs the Swzzle Blue Full Stack.
+            </p>
+            <p className="font-body text-foreground text-xl leading-relaxed font-semibold">
+              That&apos;s Swzzle.
+            </p>
+            <p className="font-body text-foreground text-xl leading-relaxed font-semibold">
+              That&apos;s why it exists.
+            </p>
+            <p className="font-display text-neon-cyan text-xl tracking-wider mt-8">
+              Science Wins... You can, too.
+            </p>
+            <p className="font-body text-foreground/80 text-lg leading-relaxed italic">
+              Now go do something.
+            </p>
+            <p className="font-display text-foreground/60 text-sm tracking-wider mt-4">
+              — Jeremy
+            </p>
+          </div>
         </div>
 
         {/* Origin */}
