@@ -85,7 +85,7 @@ export default async function HomePage() {
           </div>
 
           <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-4">
-            Science Wins... You Can, Too!
+            Science Wins. So Should You.
           </p>
 
           <p className="text-neon-cyan text-xs md:text-sm font-display uppercase tracking-widest mb-6 animate-pulse">

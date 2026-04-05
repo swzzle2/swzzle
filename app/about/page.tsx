@@ -13,7 +13,7 @@ export default function AboutPage() {
         </h1>
 
         <p className="font-display text-sm uppercase tracking-[0.3em] text-neon-red/80 mb-16">
-          Science Wins... You Can, Too!
+          Science Wins. So Should You.
         </p>
 
         {/* Founder's Note */}
@@ -57,7 +57,7 @@ export default function AboutPage() {
               That&apos;s why it exists.
             </p>
             <p className="font-display text-neon-cyan text-xl tracking-wider mt-8">
-              Science Wins... You can, too.
+              Science Wins. So Should You.
             </p>
             <p className="font-body text-foreground/80 text-lg leading-relaxed italic">
               Now go do something.
