@@ -33,9 +33,10 @@ export async function POST(
 
     const stripe = getStripe();
 
-    // Finalize and send the invoice via Stripe
+    // Finalize the invoice (don't use sendInvoice — it can auto-collect)
+    // We'll send our own branded email with the payment link instead
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sentInvoice = await stripe.invoices.sendInvoice(invoice.stripeInvoiceId) as any;
+    const sentInvoice = await stripe.invoices.finalizeInvoice(invoice.stripeInvoiceId, { auto_advance: false } as any) as any;
 
     // Update local record
     invoices[index] = {

@@ -1,6 +1,6 @@
 import { getStripe } from '@/lib/stripe';
 import { readData, writeData } from '@/lib/data-store';
-import { sendEmail, orderConfirmationHtml } from '@/lib/email';
+import { sendEmail, orderConfirmationHtml, wholesalePaymentReceivedHtml } from '@/lib/email';
 import type { Order, OrderItem } from '@/lib/orders';
 import type { Customer } from '@/lib/customers';
 import type { WholesaleInvoice } from '@/lib/invoices';
@@ -202,13 +202,13 @@ async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
 
   await writeData('invoices.json', invoices);
 
-  // Send confirmation email
+  // Send payment received email (not order confirmation — they need to know we're prepping)
   if (invoice.customerEmail) {
     try {
       await sendEmail({
         to: invoice.customerEmail,
-        subject: `Payment Received - Invoice for ${invoice.companyName}`,
-        html: orderConfirmationHtml(order),
+        subject: `Payment Received - Wholesale Order for ${invoice.companyName}`,
+        html: wholesalePaymentReceivedHtml(order, invoice.companyName),
       });
     } catch (err) {
       console.error('Failed to send wholesale payment confirmation:', err);

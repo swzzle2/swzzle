@@ -109,11 +109,13 @@ export async function POST(request: Request) {
     }
 
     // 4. Create the Stripe invoice
+    //    auto_advance: false prevents Stripe from auto-collecting even if customer has saved payment
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const stripeInvoice = await stripe.invoices.create({
       customer: customerId,
       collection_method: 'send_invoice',
       days_until_due: daysUntilDue || 30,
+      auto_advance: false,
       description: memo || undefined,
       metadata: { source: 'wholesale_hq' },
     } as any);

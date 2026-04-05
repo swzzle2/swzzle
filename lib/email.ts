@@ -128,6 +128,54 @@ export function orderConfirmationHtml(order: Order): string {
   return baseLayout(content);
 }
 
+export function wholesalePaymentReceivedHtml(order: Order, companyName: string): string {
+  const content = `
+    <h2 style="margin: 0 0 8px; font-size: 22px; color: #00F5FF; font-weight: 700;">
+      Payment Received
+    </h2>
+    <p style="margin: 0 0 24px; font-size: 14px; color: #a0a0a0;">
+      Thank you, ${order.customerName || 'there'}! We've received your payment for ${companyName}.
+      We're prepping your order now and will send you a shipping confirmation with tracking info soon.
+    </p>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+      <tr>
+        <td style="padding: 8px 0; font-size: 13px; color: #a0a0a0;">Order ID</td>
+        <td style="padding: 8px 0; font-size: 13px; color: #f0f0f0; text-align: right; font-family: monospace;">${order.id}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 0; font-size: 13px; color: #a0a0a0;">Date</td>
+        <td style="padding: 8px 0; font-size: 13px; color: #f0f0f0; text-align: right;">${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+      </tr>
+    </table>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+      <tr style="background-color: #12121a;">
+        <th style="padding: 10px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #00F5FF; font-weight: 600;">Item</th>
+        <th style="padding: 10px 16px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #00F5FF; font-weight: 600;">Qty</th>
+        <th style="padding: 10px 16px; text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #00F5FF; font-weight: 600;">Price</th>
+      </tr>
+      ${itemRowsHtml(order)}
+    </table>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="padding: 16px; border-top: 2px solid #00F5FF; text-align: right;">
+          <span style="font-size: 13px; color: #a0a0a0; margin-right: 16px;">Total Paid</span>
+          <span style="font-size: 20px; font-weight: 700; color: #00F5FF;">
+            ${formatCurrency(order.amountTotal, order.currency)}
+          </span>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin: 24px 0 0; font-size: 13px; color: #a0a0a0; line-height: 1.6;">
+      If you have any questions, just reply to this email. We'll be in touch with shipping details shortly.
+    </p>`;
+
+  return baseLayout(content);
+}
+
 export function shippingUpdateHtml(order: Order): string {
   const trackingInfo = order.trackingNumber
     ? `
