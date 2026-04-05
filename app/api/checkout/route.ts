@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
-
 export async function POST(request: Request) {
   try {
     const items: { id: string; quantity: number }[] = await request.json();
@@ -14,38 +13,40 @@ export async function POST(request: Request) {
     const origin = new URL(request.url).origin;
     const products = await readData<Product[]>('products.json');
 
-    const line_items: Array<{
-      price_data: {
-        currency: string;
-        product_data: { name: string; images: string[] };
-        unit_amount: number;
-      };
-      quantity: number;
-    }> = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const line_items: any[] = [];
 
     for (const item of items) {
       const product = products.find((p) => p.id === item.id);
       if (!product) continue;
 
-      // Handle both relative paths and absolute Blob URLs
-      let imageUrl = '';
-      if (product.image) {
-        imageUrl = product.image.startsWith('http')
-          ? product.image
-          : `${origin}${product.image}`;
-      }
+      if (product.stripePriceId) {
+        // Use existing Stripe Price
+        line_items.push({
+          price: product.stripePriceId,
+          quantity: item.quantity,
+        });
+      } else {
+        // Fallback to inline price_data
+        let imageUrl = '';
+        if (product.image) {
+          imageUrl = product.image.startsWith('http')
+            ? product.image
+            : `${origin}${product.image}`;
+        }
 
-      line_items.push({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: product.name,
-            images: imageUrl ? [imageUrl] : [],
+        line_items.push({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: product.name,
+              images: imageUrl ? [imageUrl] : [],
+            },
+            unit_amount: Math.round(product.price * 100),
           },
-          unit_amount: Math.round(product.price * 100),
-        },
-        quantity: item.quantity,
-      });
+          quantity: item.quantity,
+        });
+      }
     }
 
     if (line_items.length === 0) {

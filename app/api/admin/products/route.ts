@@ -1,11 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { readData, writeData } from '@/lib/data-store';
+import { getStripe } from '@/lib/stripe';
+import type { Product } from '@/lib/products';
 
-type Product = {
-  id: string;
-  [key: string]: unknown;
-};
+async function syncProductToStripe(product: Product, origin?: string): Promise<{ stripeProductId: string; stripePriceId: string }> {
+  const stripe = getStripe();
+
+  // Build image URL
+  let imageUrl = '';
+  if (product.image) {
+    imageUrl = product.image.startsWith('http')
+      ? product.image
+      : origin
+      ? `${origin}${product.image}`
+      : '';
+  }
+
+  if (product.stripeProductId) {
+    // Update existing Stripe product
+    await stripe.products.update(product.stripeProductId, {
+      name: product.name,
+      description: product.shortDescription || undefined,
+      active: product.status === 'active',
+      ...(imageUrl ? { images: [imageUrl] } : {}),
+    });
+
+    // Check if price changed — if so, create new price and archive old one
+    const existingPrice = product.stripePriceId
+      ? await stripe.prices.retrieve(product.stripePriceId)
+      : null;
+
+    const newAmountCents = Math.round(product.price * 100);
+
+    if (!existingPrice || existingPrice.unit_amount !== newAmountCents) {
+      // Archive old price
+      if (product.stripePriceId) {
+        await stripe.prices.update(product.stripePriceId, { active: false });
+      }
+      // Create new price
+      const newPrice = await stripe.prices.create({
+        product: product.stripeProductId,
+        unit_amount: newAmountCents,
+        currency: 'usd',
+      });
+      return { stripeProductId: product.stripeProductId, stripePriceId: newPrice.id };
+    }
+
+    return { stripeProductId: product.stripeProductId, stripePriceId: product.stripePriceId! };
+  } else {
+    // Create new Stripe product + price
+    const stripeProduct = await stripe.products.create({
+      name: product.name,
+      description: product.shortDescription || undefined,
+      active: product.status === 'active',
+      metadata: { swzzle_id: product.id },
+      ...(imageUrl ? { images: [imageUrl] } : {}),
+    });
+
+    const stripePrice = await stripe.prices.create({
+      product: stripeProduct.id,
+      unit_amount: Math.round(product.price * 100),
+      currency: 'usd',
+    });
+
+    return { stripeProductId: stripeProduct.id, stripePriceId: stripePrice.id };
+  }
+}
 
 export async function GET(request: NextRequest) {
   if (!(await isAuthenticated())) {
@@ -35,12 +96,25 @@ export async function POST(request: Request) {
     const updatedProduct = await request.json();
     const products = await readData<Product[]>('products.json');
 
-    const index = products.findIndex((p) => p.id === updatedProduct.id);
+    const index = products.findIndex((p: Product) => p.id === updatedProduct.id);
     if (index === -1) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
+    // Merge updates
     products[index] = { ...products[index], ...updatedProduct };
+
+    // Sync to Stripe
+    try {
+      const origin = new URL(request.url).origin;
+      const { stripeProductId, stripePriceId } = await syncProductToStripe(products[index], origin);
+      products[index].stripeProductId = stripeProductId;
+      products[index].stripePriceId = stripePriceId;
+    } catch (stripeErr) {
+      console.error('Stripe sync error:', stripeErr);
+      // Save product data even if Stripe sync fails — don't block the save
+    }
+
     await writeData('products.json', products);
 
     return NextResponse.json({ success: true, product: products[index] });

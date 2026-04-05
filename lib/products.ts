@@ -14,6 +14,8 @@ export type Product = {
   image: string;
   images?: string[];
   color: string;
+  stripeProductId?: string;
+  stripePriceId?: string;
 };
 
 export function getProducts(): Product[] {
