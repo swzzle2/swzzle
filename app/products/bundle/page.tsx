@@ -84,7 +84,14 @@ export default async function BundleProductPage() {
 
               <AddToCartButton product={product} />
 
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-3 pt-2 bg-neon-cyan/10 border border-neon-cyan/30 rounded-lg px-4 py-3">
+                <span className="text-neon-cyan text-lg animate-pulse">&#9733;</span>
+                <span className="font-display text-sm text-neon-cyan uppercase tracking-wider font-bold">
+                  Free Shipping Included
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-neon-purple animate-pulse" />
                 <span className="font-body text-sm text-foreground/50">
                   In stock — ships within 2 business days

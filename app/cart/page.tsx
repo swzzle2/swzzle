@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 export default function CartPage() {
   const { items, removeItem, updateQuantity, getSubtotal, clearCart } =
     useCartStore();
-  const [freeShippingThreshold, setFreeShippingThreshold] = useState(40);
+  const [freeShippingThreshold] = useState(25);
   const [checkingOut, setCheckingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [couponCode, setCouponCode] = useState('');
@@ -16,14 +16,10 @@ export default function CartPage() {
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
 
+  const FLAT_RATE_SHIPPING = 7.99;
+
   useEffect(() => {
     setMounted(true);
-    fetch('/api/admin/settings')
-      .then((r) => r.json())
-      .then((s) => {
-        if (s.freeShippingThreshold) setFreeShippingThreshold(s.freeShippingThreshold);
-      })
-      .catch(() => {});
   }, []);
 
   const subtotal = getSubtotal();
@@ -68,7 +64,8 @@ export default function CartPage() {
       ? couponApplied.amountOff / 100
       : 0
     : 0;
-  const total = Math.max(0, subtotal - discount);
+  const shipping = qualifiesFreeShipping ? 0 : FLAT_RATE_SHIPPING;
+  const total = Math.max(0, subtotal - discount + shipping);
 
   async function handleCheckout() {
     setCheckingOut(true);
@@ -215,8 +212,7 @@ export default function CartPage() {
         )}
         {!qualifiesFreeShipping && (
           <div className="mb-4 text-gray-500 text-sm font-body">
-            Add ${(freeShippingThreshold - subtotal).toFixed(2)} more for free
-            shipping
+            Shipping: $7.99 flat rate. <span className="text-neon-cyan">Free shipping on orders over $25!</span>
           </div>
         )}
 
@@ -274,6 +270,12 @@ export default function CartPage() {
             <span className="font-display font-bold text-lg text-neon-purple">-${discount.toFixed(2)}</span>
           </div>
         )}
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-display text-sm tracking-wider text-gray-500">SHIPPING</span>
+          <span className={`font-display font-bold text-lg ${qualifiesFreeShipping ? 'text-neon-cyan' : 'text-gray-400'}`}>
+            {qualifiesFreeShipping ? 'FREE' : `$${FLAT_RATE_SHIPPING.toFixed(2)}`}
+          </span>
+        </div>
         <div className="flex justify-between items-center mb-6 pt-2 border-t border-border">
           <span className="font-display font-bold text-lg tracking-wider text-gray-400">TOTAL</span>
           <span className="font-display font-black text-2xl md:text-3xl">${total.toFixed(2)}</span>

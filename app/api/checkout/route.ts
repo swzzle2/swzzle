@@ -58,6 +58,28 @@ export async function POST(request: Request) {
       );
     }
 
+    // Calculate subtotal for shipping logic
+    let subtotalCents = 0;
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.id);
+      if (product) subtotalCents += Math.round(product.price * 100) * item.quantity;
+    }
+
+    const FREE_SHIPPING_THRESHOLD_CENTS = 2500; // $25.00
+    const FLAT_RATE_SHIPPING_CENTS = 799; // $7.99
+
+    // Add shipping as a line item if under threshold
+    if (subtotalCents < FREE_SHIPPING_THRESHOLD_CENTS) {
+      line_items.push({
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Flat Rate Shipping' },
+          unit_amount: FLAT_RATE_SHIPPING_CENTS,
+        },
+        quantity: 1,
+      });
+    }
+
     // If a coupon code was applied in the cart, look up the promo and attach it
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sessionParams: any = {

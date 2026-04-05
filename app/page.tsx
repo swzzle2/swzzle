@@ -84,8 +84,12 @@ export default async function HomePage() {
             />
           </div>
 
-          <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-6">
+          <p className="font-display text-sm md:text-lg uppercase tracking-[0.3em] text-gray-400 mb-4">
             Science Wins... You Can, Too!
+          </p>
+
+          <p className="text-neon-cyan text-xs md:text-sm font-display uppercase tracking-widest mb-6 animate-pulse">
+            &#10003; Free Shipping on Swzzle Bundle Packs!
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -140,6 +144,11 @@ export default async function HomePage() {
                   <p className={`font-display font-bold text-2xl mt-3 ${style.textClass}`}>
                     ${p.price}
                   </p>
+                  {p.id === 'bundle' && (
+                    <p className="text-neon-cyan text-xs font-display uppercase tracking-widest mt-2 animate-pulse">
+                      &#9733; Free Shipping
+                    </p>
+                  )}
                 </div>
               </Link>
             );
