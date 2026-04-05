@@ -1,13 +1,31 @@
 'use client';
 
-import { useSession, signIn, signOut } from 'next-auth/react';
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase-client';
+import type { User } from '@supabase/supabase-js';
 
 export function AccountMenu() {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -20,30 +38,37 @@ export function AccountMenu() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className="w-8 h-8 rounded-full bg-surface-light animate-pulse" />
     );
   }
 
-  if (!session?.user) {
+  if (!user) {
     return (
-      <button
-        onClick={() => signIn('google')}
+      <Link
+        href="/auth/signin"
         className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan transition-colors"
       >
         Sign In
-      </button>
+      </Link>
     );
   }
 
-  const user = session.user;
-  const initials = (user.name || user.email || '?')
+  const displayName =
+    user.user_metadata?.full_name || user.user_metadata?.name || user.email || '';
+  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+  const initials = (displayName || '?')
     .split(' ')
-    .map((s) => s[0])
+    .map((s: string) => s[0])
     .slice(0, 2)
     .join('')
     .toUpperCase();
+
+  async function handleSignOut() {
+    setOpen(false);
+    await supabase.auth.signOut();
+  }
 
   return (
     <div className="relative" ref={menuRef}>
@@ -52,9 +77,9 @@ export function AccountMenu() {
         className="flex items-center gap-2 group"
         aria-label="Account menu"
       >
-        {user.image ? (
+        {avatarUrl ? (
           <img
-            src={user.image}
+            src={avatarUrl}
             alt=""
             className="w-8 h-8 rounded-full border border-border group-hover:border-neon-cyan transition-colors"
           />
@@ -64,7 +89,7 @@ export function AccountMenu() {
           </div>
         )}
         <span className="hidden sm:inline text-sm font-display text-gray-400 group-hover:text-neon-cyan transition-colors">
-          {user.name?.split(' ')[0] || 'Account'}
+          {displayName.split(' ')[0] || 'Account'}
         </span>
         <svg
           width="12"
@@ -80,7 +105,7 @@ export function AccountMenu() {
       {open && (
         <div className="absolute right-0 top-full mt-2 w-48 bg-surface border border-border rounded-lg shadow-lg shadow-black/50 overflow-hidden z-50">
           <div className="px-4 py-3 border-b border-border">
-            <p className="text-sm font-display text-foreground truncate">{user.name}</p>
+            <p className="text-sm font-display text-foreground truncate">{displayName}</p>
             <p className="text-xs text-gray-500 truncate">{user.email}</p>
           </div>
           <div className="py-1">
@@ -101,10 +126,7 @@ export function AccountMenu() {
           </div>
           <div className="border-t border-border py-1">
             <button
-              onClick={() => {
-                setOpen(false);
-                signOut();
-              }}
+              onClick={handleSignOut}
               className="block w-full text-left px-4 py-2 text-sm text-gray-400 hover:text-neon-red hover:bg-surface-light transition-colors"
             >
               Sign Out

@@ -1,15 +1,34 @@
 'use client';
 
-import { useSession, signIn } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase-client';
+import type { User } from '@supabase/supabase-js';
 
 export function WishlistButton({ productId }: { productId: string }) {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const supabase = createClient();
 
   useEffect(() => {
-    if (status !== 'authenticated') return;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setAuthReady(true);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setAuthReady(true);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!authReady || !user) return;
 
     async function checkWishlist() {
       try {
@@ -23,11 +42,11 @@ export function WishlistButton({ productId }: { productId: string }) {
       }
     }
     checkWishlist();
-  }, [status, productId]);
+  }, [authReady, user, productId]);
 
   async function toggle() {
-    if (status !== 'authenticated') {
-      signIn('google');
+    if (!user) {
+      window.location.href = '/auth/signin';
       return;
     }
 
@@ -55,7 +74,7 @@ export function WishlistButton({ productId }: { productId: string }) {
       disabled={loading}
       className="group relative p-2 rounded-full transition-all duration-200 hover:bg-neon-red/10 disabled:opacity-50"
       aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-      title={status !== 'authenticated' ? 'Sign in to save to wishlist' : wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+      title={!user ? 'Sign in to save to wishlist' : wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
     >
       <svg
         className={`w-5 h-5 transition-colors duration-200 ${

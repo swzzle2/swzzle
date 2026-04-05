@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth-options';
+import { createServerSupabase } from '@/lib/supabase-server';
 import { readData, writeData } from '@/lib/data-store';
 import type { Customer, Address } from '@/lib/customers';
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const supabase = await createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const customers = await readData<Customer[]>('customers.json');
-    const customer = customers.find((c) => c.email === session.user!.email);
+    const customer = customers.find((c) => c.email === user.email);
 
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
@@ -26,8 +27,10 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const supabase = await createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -36,7 +39,7 @@ export async function PUT(request: NextRequest) {
     const { name, addresses } = body as { name?: string; addresses?: Address[] };
 
     const customers = await readData<Customer[]>('customers.json');
-    const index = customers.findIndex((c) => c.email === session.user!.email);
+    const index = customers.findIndex((c) => c.email === user.email);
 
     if (index === -1) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });

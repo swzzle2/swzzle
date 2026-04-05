@@ -1,8 +1,9 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase-client';
 import type { Address, Customer } from '@/lib/customers';
+import type { User } from '@supabase/supabase-js';
 
 const EMPTY_ADDRESS: Address = {
   name: '',
@@ -15,7 +16,7 @@ const EMPTY_ADDRESS: Address = {
 };
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const [user, setUser] = useState<User | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [name, setName] = useState('');
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -24,6 +25,13 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState<Address>({ ...EMPTY_ADDRESS });
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+  }, []);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -112,9 +120,9 @@ export default function ProfilePage() {
         <div>
           <label className="block text-xs text-gray-500 mb-1.5 font-body">Email</label>
           <div className="bg-background border border-border rounded px-4 py-2.5 text-sm text-gray-400 cursor-not-allowed">
-            {session?.user?.email ?? customer?.email ?? ''}
+            {user?.email ?? customer?.email ?? ''}
           </div>
-          <p className="text-xs text-gray-600 mt-1">Email is linked to your Google account and cannot be changed.</p>
+          <p className="text-xs text-gray-600 mt-1">Email is linked to your account and cannot be changed.</p>
         </div>
 
         <div>

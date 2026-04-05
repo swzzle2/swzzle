@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth-options';
+import { createServerSupabase } from '@/lib/supabase-server';
 import { readData } from '@/lib/data-store';
 import type { Order } from '@/lib/orders';
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const supabase = await createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const orders = await readData<Order[]>('orders.json');
     const customerOrders = orders
-      .filter((o) => o.customerEmail === session.user!.email)
+      .filter((o) => o.customerEmail === user.email)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     const id = request.nextUrl.searchParams.get('id');

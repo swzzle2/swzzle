@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase-client';
 
 const navItems = [
   { href: '/account', label: 'Overview', icon: OverviewIcon },
@@ -13,17 +13,36 @@ const navItems = [
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+  const [authStatus, setAuthStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
   const pathname = usePathname();
   const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/api/auth/signin');
-    }
-  }, [status, router]);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setAuthStatus('authenticated');
+      } else {
+        setAuthStatus('unauthenticated');
+        router.push('/auth/signin');
+      }
+    });
 
-  if (status === 'loading') {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setAuthStatus('authenticated');
+      } else {
+        setAuthStatus('unauthenticated');
+        router.push('/auth/signin');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (authStatus === 'loading') {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
@@ -34,7 +53,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (authStatus === 'unauthenticated') {
     return null;
   }
 

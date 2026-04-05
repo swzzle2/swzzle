@@ -1,14 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase-client';
 import type { Order } from '@/lib/orders';
+import type { User } from '@supabase/supabase-js';
 
 export default function AccountOverviewPage() {
-  const { data: session } = useSession();
+  const [user, setUser] = useState<User | null>(null);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+  }, []);
 
   useEffect(() => {
     async function fetchOrders() {
@@ -27,7 +35,9 @@ export default function AccountOverviewPage() {
     fetchOrders();
   }, []);
 
-  const firstName = session?.user?.name?.split(' ')[0] ?? 'there';
+  const displayName =
+    user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || '';
+  const firstName = displayName.split(' ')[0] || 'there';
 
   return (
     <div className="space-y-8">
