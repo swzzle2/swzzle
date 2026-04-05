@@ -25,6 +25,10 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState<Address>({ ...EMPTY_ADDRESS });
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -257,6 +261,83 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Change Password */}
+      <div className="bg-surface border border-border rounded-lg p-6 space-y-5">
+        <h2 className="font-display text-sm uppercase tracking-wider text-gray-400">
+          Change Password
+        </h2>
+
+        {passwordMessage && (
+          <div
+            className={`rounded-lg p-3 text-sm border ${
+              passwordMessage.type === 'success'
+                ? 'bg-green-400/10 border-green-400/20 text-green-400'
+                : 'bg-neon-red/10 border-neon-red/20 text-neon-red'
+            }`}
+          >
+            {passwordMessage.text}
+          </div>
+        )}
+
+        <div>
+          <label htmlFor="newPassword" className="block text-xs text-gray-500 mb-1.5 font-body">
+            New Password
+          </label>
+          <input
+            id="newPassword"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="At least 6 characters"
+            minLength={6}
+            className="w-full bg-background border border-border rounded px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-neon-cyan/50 transition-colors placeholder:text-gray-600"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword" className="block text-xs text-gray-500 mb-1.5 font-body">
+            Confirm New Password
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Repeat your new password"
+            minLength={6}
+            className="w-full bg-background border border-border rounded px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-neon-cyan/50 transition-colors placeholder:text-gray-600"
+          />
+        </div>
+
+        <button
+          onClick={async () => {
+            if (!newPassword || newPassword.length < 6) {
+              setPasswordMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+              return;
+            }
+            if (newPassword !== confirmPassword) {
+              setPasswordMessage({ type: 'error', text: 'Passwords do not match' });
+              return;
+            }
+            setPasswordSaving(true);
+            setPasswordMessage(null);
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+              setPasswordMessage({ type: 'error', text: error.message });
+            } else {
+              setPasswordMessage({ type: 'success', text: 'Password updated successfully' });
+              setNewPassword('');
+              setConfirmPassword('');
+            }
+            setPasswordSaving(false);
+          }}
+          disabled={passwordSaving || !newPassword}
+          className="border border-neon-cyan text-neon-cyan font-display text-xs uppercase tracking-wider px-6 py-2.5 rounded hover:bg-neon-cyan/10 transition-colors disabled:opacity-50"
+        >
+          {passwordSaving ? 'Updating...' : 'Update Password'}
+        </button>
       </div>
 
       {/* Save button */}
