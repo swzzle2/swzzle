@@ -147,6 +147,8 @@ export default function CreateInvoicePage() {
       }
 
       const invoice = await res.json();
+      // Small delay to let Blob write propagate before redirect
+      await new Promise((r) => setTimeout(r, 1500));
       router.push(`/hq/wholesale/invoices/${invoice.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create invoice');

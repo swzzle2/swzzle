@@ -35,18 +35,27 @@ export default function InvoiceDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkAuth, id]);
 
-  async function fetchInvoice() {
+  async function fetchInvoice(retries = 3) {
     try {
       const res = await fetch(`/api/admin/invoices?id=${id}`);
       if (res.ok) {
         const data = await res.json();
         setInvoice(data);
+        setLoading(false);
+      } else if (retries > 0) {
+        // Blob may not have propagated yet — retry
+        await new Promise((r) => setTimeout(r, 1000));
+        return fetchInvoice(retries - 1);
       } else {
         setError('Invoice not found');
+        setLoading(false);
       }
     } catch {
+      if (retries > 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        return fetchInvoice(retries - 1);
+      }
       setError('Failed to load invoice');
-    } finally {
       setLoading(false);
     }
   }
