@@ -48,6 +48,7 @@ export default async function DashboardPage() {
     { label: 'Blog', href: '/hq/blog', icon: '✎' },
     { label: 'Orders', href: '/hq/orders', icon: '◈' },
     { label: 'Coupons', href: '/hq/coupons', icon: '%' },
+    { label: 'Wholesale', href: '/hq/wholesale', icon: '◉' },
     { label: 'Settings', href: '/hq/settings', icon: '⚙' },
   ];
 

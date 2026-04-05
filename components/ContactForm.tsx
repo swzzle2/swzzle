@@ -6,6 +6,7 @@ export function ContactForm({ subject = '', buttonText = 'Send Inquiry' }: { sub
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -20,7 +21,7 @@ export function ContactForm({ subject = '', buttonText = 'Send Inquiry' }: { sub
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message }),
+        body: JSON.stringify({ name, email, phone, subject, message }),
       });
 
       if (!res.ok) {
@@ -80,6 +81,15 @@ export function ContactForm({ subject = '', buttonText = 'Send Inquiry' }: { sub
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="neon-input"
+        />
+      </div>
+      <div>
+        <input
+          type="tel"
+          placeholder="Phone (optional)"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
           className="neon-input"
         />
       </div>
