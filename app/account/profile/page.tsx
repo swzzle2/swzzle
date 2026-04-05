@@ -77,11 +77,11 @@ export default function ProfilePage() {
   }
 
   function addAddress() {
-    if (!newAddress.name || !newAddress.line1 || !newAddress.city || !newAddress.state || !newAddress.zip) {
+    if (!newAddress.line1 || !newAddress.city || !newAddress.state || !newAddress.zip) {
       setMessage({ type: 'error', text: 'Please fill in all required address fields.' });
       return;
     }
-    setAddresses([...addresses, { ...newAddress }]);
+    setAddresses([...addresses, { ...newAddress, name: name || 'Default' }]);
     setNewAddress({ ...EMPTY_ADDRESS });
     setShowAddressForm(false);
     setMessage(null);
@@ -167,7 +167,6 @@ export default function ProfilePage() {
         {addresses.map((addr, i) => (
           <div key={i} className="flex items-start justify-between bg-background border border-border rounded-lg p-4">
             <div className="text-sm space-y-0.5">
-              <p className="text-foreground font-medium">{addr.name}</p>
               <p className="text-gray-400">{addr.line1}</p>
               {addr.line2 && <p className="text-gray-400">{addr.line2}</p>}
               <p className="text-gray-400">
@@ -191,13 +190,6 @@ export default function ProfilePage() {
         {showAddressForm && (
           <div className="bg-background border border-neon-cyan/20 rounded-lg p-4 space-y-3">
             <p className="font-display text-xs uppercase tracking-wider text-neon-cyan mb-2">New Address</p>
-            <input
-              type="text"
-              placeholder="Full name *"
-              value={newAddress.name}
-              onChange={(e) => setNewAddress({ ...newAddress, name: e.target.value })}
-              className="w-full bg-surface border border-border rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-neon-cyan/50 transition-colors"
-            />
             <input
               type="text"
               placeholder="Address line 1 *"
