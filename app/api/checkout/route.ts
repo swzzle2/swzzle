@@ -4,7 +4,9 @@ import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
 export async function POST(request: Request) {
   try {
-    const items: { id: string; quantity: number }[] = await request.json();
+    const body = await request.json();
+    const items: { id: string; quantity: number }[] = body.items || body;
+    const couponCode: string | undefined = body.couponCode;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'No items provided' }, { status: 400 });
@@ -56,13 +58,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const session = await getStripe().checkout.sessions.create({
+    // If a coupon code was applied in the cart, look up the promo and attach it
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sessionParams: any = {
       mode: 'payment',
       line_items,
-      allow_promotion_codes: true,
       success_url: `${origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
-    });
+    };
+
+    if (couponCode) {
+      try {
+        const stripe = getStripe();
+        const promos = await stripe.promotionCodes.list({ code: couponCode.toUpperCase(), active: true });
+        if (promos.data.length > 0) {
+          sessionParams.discounts = [{ promotion_code: promos.data[0].id }];
+        }
+      } catch {
+        // If promo lookup fails, still allow checkout without discount
+      }
+    }
+
+    // Only allow manual promo code entry if no discount already applied
+    if (!sessionParams.discounts) {
+      sessionParams.allow_promotion_codes = true;
+    }
+
+    const session = await getStripe().checkout.sessions.create(sessionParams);
 
     return NextResponse.json({ url: session.url });
   } catch (error) {

@@ -11,6 +11,10 @@ export default function CartPage() {
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(40);
   const [checkingOut, setCheckingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponApplied, setCouponApplied] = useState<{ code: string; percentOff?: number; amountOff?: number } | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -25,15 +29,57 @@ export default function CartPage() {
   const subtotal = getSubtotal();
   const qualifiesFreeShipping = subtotal >= freeShippingThreshold;
 
+  async function handleApplyCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError('');
+    setCouponApplied(null);
+
+    try {
+      const res = await fetch(`/api/coupon/validate?code=${encodeURIComponent(couponCode.trim().toUpperCase())}`);
+      const data = await res.json();
+
+      if (!res.ok || !data.valid) {
+        setCouponError(data.error || 'Invalid coupon code');
+      } else {
+        setCouponApplied({
+          code: data.code,
+          percentOff: data.percentOff,
+          amountOff: data.amountOff,
+        });
+      }
+    } catch {
+      setCouponError('Failed to validate coupon');
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removeCoupon() {
+    setCouponApplied(null);
+    setCouponCode('');
+    setCouponError('');
+  }
+
+  const discount = couponApplied
+    ? couponApplied.percentOff
+      ? subtotal * (couponApplied.percentOff / 100)
+      : couponApplied.amountOff
+      ? couponApplied.amountOff / 100
+      : 0
+    : 0;
+  const total = Math.max(0, subtotal - discount);
+
   async function handleCheckout() {
     setCheckingOut(true);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          items.map((item) => ({ id: item.id, quantity: item.quantity }))
-        ),
+        body: JSON.stringify({
+          items: items.map((item) => ({ id: item.id, quantity: item.quantity })),
+          couponCode: couponApplied?.code || undefined,
+        }),
       });
       const data = await res.json();
       if (data.url) {
@@ -174,13 +220,63 @@ export default function CartPage() {
           </div>
         )}
 
-        <div className="flex justify-between items-center mb-6">
-          <span className="font-display font-bold text-lg tracking-wider text-gray-400">
-            SUBTOTAL
-          </span>
-          <span className="font-display font-black text-2xl md:text-3xl">
-            ${subtotal.toFixed(2)}
-          </span>
+        {/* Coupon Code */}
+        <div className="mb-6">
+          {couponApplied ? (
+            <div className="flex items-center justify-between bg-neon-purple/10 border border-neon-purple/30 rounded-lg px-4 py-3">
+              <div>
+                <span className="font-display text-sm uppercase tracking-wider text-neon-purple font-bold">
+                  {couponApplied.code}
+                </span>
+                <span className="text-gray-400 text-sm ml-2">
+                  {couponApplied.percentOff
+                    ? `${couponApplied.percentOff}% off`
+                    : `$${((couponApplied.amountOff || 0) / 100).toFixed(2)} off`}
+                </span>
+              </div>
+              <button
+                onClick={removeCoupon}
+                className="text-gray-500 hover:text-neon-red text-xs font-body transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                placeholder="Coupon code"
+                className="flex-1 bg-background border border-border rounded px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-neon-purple/50 transition-colors placeholder:text-gray-600 font-display uppercase tracking-wider"
+              />
+              <button
+                onClick={handleApplyCoupon}
+                disabled={couponLoading || !couponCode.trim()}
+                className="border border-neon-purple text-neon-purple font-display text-xs uppercase tracking-wider px-4 py-2.5 rounded hover:bg-neon-purple/10 transition-colors disabled:opacity-50"
+              >
+                {couponLoading ? '...' : 'Apply'}
+              </button>
+            </div>
+          )}
+          {couponError && (
+            <p className="text-neon-red text-xs mt-2 font-body">{couponError}</p>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-display text-sm tracking-wider text-gray-500">SUBTOTAL</span>
+          <span className="font-display font-bold text-lg text-gray-400">${subtotal.toFixed(2)}</span>
+        </div>
+        {discount > 0 && (
+          <div className="flex justify-between items-center mb-2">
+            <span className="font-display text-sm tracking-wider text-neon-purple">DISCOUNT</span>
+            <span className="font-display font-bold text-lg text-neon-purple">-${discount.toFixed(2)}</span>
+          </div>
+        )}
+        <div className="flex justify-between items-center mb-6 pt-2 border-t border-border">
+          <span className="font-display font-bold text-lg tracking-wider text-gray-400">TOTAL</span>
+          <span className="font-display font-black text-2xl md:text-3xl">${total.toFixed(2)}</span>
         </div>
 
         <button
