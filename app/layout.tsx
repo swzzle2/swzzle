@@ -20,7 +20,7 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  title: "Swzzle Liniment — Science Wins. So Should You.",
+  title: "Swzzle — Science Wins. So Should You.",
   description:
     "Swzzle builds the simplest, most effective tools to turn any standard-issue human body into a high-performance machine. Engineered for athletes, made in McConnelsville, Ohio.",
 };
