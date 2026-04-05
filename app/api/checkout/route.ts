@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
+
+const FREE_SHIPPING_THRESHOLD_CENTS = 2500; // $25.00
+const FLAT_RATE_SHIPPING_CENTS = 799; // $7.99
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -17,19 +21,20 @@ export async function POST(request: Request) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const line_items: any[] = [];
+    let subtotalCents = 0;
 
     for (const item of items) {
       const product = products.find((p) => p.id === item.id);
       if (!product) continue;
 
+      subtotalCents += Math.round(product.price * 100) * item.quantity;
+
       if (product.stripePriceId) {
-        // Use existing Stripe Price
         line_items.push({
           price: product.stripePriceId,
           quantity: item.quantity,
         });
       } else {
-        // Fallback to inline price_data
         let imageUrl = '';
         if (product.image) {
           imageUrl = product.image.startsWith('http')
@@ -58,37 +63,40 @@ export async function POST(request: Request) {
       );
     }
 
-    // Calculate subtotal for shipping logic
-    let subtotalCents = 0;
-    for (const item of items) {
-      const product = products.find((p) => p.id === item.id);
-      if (product) subtotalCents += Math.round(product.price * 100) * item.quantity;
-    }
+    // Build shipping options — Stripe shipping_options are NOT subject to discounts
+    const qualifiesFreeShipping = subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS;
 
-    const FREE_SHIPPING_THRESHOLD_CENTS = 2500; // $25.00
-    const FLAT_RATE_SHIPPING_CENTS = 799; // $7.99
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const shipping_options: any[] = qualifiesFreeShipping
+      ? [
+          {
+            shipping_rate_data: {
+              display_name: 'Free Shipping',
+              type: 'fixed_amount',
+              fixed_amount: { amount: 0, currency: 'usd' },
+            },
+          },
+        ]
+      : [
+          {
+            shipping_rate_data: {
+              display_name: 'Flat Rate Shipping',
+              type: 'fixed_amount',
+              fixed_amount: { amount: FLAT_RATE_SHIPPING_CENTS, currency: 'usd' },
+            },
+          },
+        ];
 
-    // Add shipping as a line item if under threshold
-    if (subtotalCents < FREE_SHIPPING_THRESHOLD_CENTS) {
-      line_items.push({
-        price_data: {
-          currency: 'usd',
-          product_data: { name: 'Flat Rate Shipping' },
-          unit_amount: FLAT_RATE_SHIPPING_CENTS,
-        },
-        quantity: 1,
-      });
-    }
-
-    // If a coupon code was applied in the cart, look up the promo and attach it
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sessionParams: any = {
       mode: 'payment',
       line_items,
+      shipping_options,
       success_url: `${origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
     };
 
+    // If a coupon code was applied in the cart, look up the promo and attach it
     if (couponCode) {
       try {
         const stripe = getStripe();
