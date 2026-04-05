@@ -9,7 +9,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const invoices = await readData<WholesaleInvoice[]>('invoices.json');
+  let invoices: WholesaleInvoice[] = [];
+  try {
+    invoices = await readData<WholesaleInvoice[]>('invoices.json');
+  } catch {
+    // empty
+  }
 
   const id = request.nextUrl.searchParams.get('id');
   if (id) {
@@ -22,8 +27,7 @@ export async function GET(request: NextRequest) {
 
   const status = request.nextUrl.searchParams.get('status');
   if (status) {
-    const filtered = invoices.filter((inv) => inv.status === status);
-    return NextResponse.json(filtered);
+    return NextResponse.json(invoices.filter((inv) => inv.status === status));
   }
 
   return NextResponse.json(invoices);
@@ -56,7 +60,7 @@ export async function POST(request: Request) {
 
     if (!customerName || !customerEmail || !companyName || !items?.length) {
       return NextResponse.json(
-        { error: 'Missing required fields: customerName, customerEmail, companyName, items' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
@@ -80,26 +84,27 @@ export async function POST(request: Request) {
       customerId = newCustomer.id;
     }
 
-    // 2. Create invoice items for each line item
+    // 2. Create invoice items — use `amount` (total in cents for the line)
+    //    Stripe invoiceItems.create uses `amount` not `unit_amount`
     for (const item of items) {
+      const lineTotal = item.unitPrice * item.quantity;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await stripe.invoiceItems.create({
         customer: customerId,
-        description: item.name,
-        quantity: item.quantity,
-        unit_amount: item.unitPrice,
+        amount: lineTotal,
         currency: 'usd',
+        description: `${item.name} (${item.quantity} × $${(item.unitPrice / 100).toFixed(2)})`,
       } as any);
     }
 
-    // 3. Add shipping as invoice item if > 0
+    // 3. Add shipping if > 0
     if (shippingCost > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await stripe.invoiceItems.create({
         customer: customerId,
-        description: 'Shipping',
-        unit_amount: shippingCost,
+        amount: shippingCost,
         currency: 'usd',
+        description: 'Shipping',
       } as any);
     }
 
@@ -113,7 +118,7 @@ export async function POST(request: Request) {
       metadata: { source: 'wholesale_hq' },
     } as any);
 
-    // 5. Calculate subtotal and total
+    // 5. Calculate totals
     const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
     const total = subtotal + (shippingCost || 0);
 
@@ -138,7 +143,12 @@ export async function POST(request: Request) {
       updatedAt: now,
     };
 
-    const invoices = await readData<WholesaleInvoice[]>('invoices.json');
+    let invoices: WholesaleInvoice[] = [];
+    try {
+      invoices = await readData<WholesaleInvoice[]>('invoices.json');
+    } catch {
+      // empty
+    }
     invoices.push(invoice);
     await writeData('invoices.json', invoices);
 
