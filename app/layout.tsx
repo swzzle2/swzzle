@@ -20,9 +20,9 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  title: "Swzzle — Science Wins. So Should You.",
+  title: "Swzzle — Upgrade the Hardware.",
   description:
-    "Swzzle builds the simplest, most effective tools to turn any standard-issue human body into a high-performance machine. Engineered for athletes, made in McConnelsville, Ohio.",
+    "Swzzle Liniment Stick — the single topical stick engineered to turn any standard-issue human body into a high-performance machine. Made in McConnelsville, Ohio.",
   icons: {
     icon: "/swzzle-icon.png",
     apple: "/swzzle-icon.png",

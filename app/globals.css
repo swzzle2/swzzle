@@ -83,6 +83,34 @@ body {
   border-color: rgba(182,0,255,0.5);
 }
 
+/* HUD corner brackets */
+.hud-brackets {
+  position: relative;
+}
+
+.hud-brackets::before,
+.hud-brackets::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.hud-brackets::before {
+  top: -4px;
+  left: -4px;
+  border-top: 2px solid rgba(0,245,255,0.7);
+  border-left: 2px solid rgba(0,245,255,0.7);
+}
+
+.hud-brackets::after {
+  bottom: -4px;
+  right: -4px;
+  border-bottom: 2px solid rgba(0,245,255,0.7);
+  border-right: 2px solid rgba(0,245,255,0.7);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #050508; }

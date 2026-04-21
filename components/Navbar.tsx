@@ -21,21 +21,9 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/products/red" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-red transition-colors">
-            Red
-          </Link>
-          <Link href="/products/blue" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan transition-colors">
-            Blue
-          </Link>
-          <Link href="/products/bundle" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-purple transition-colors">
-            Bundle
-          </Link>
-          <Link href="/blog" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-foreground transition-colors">
-            Blog
-          </Link>
-          <Link href="/about" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-foreground transition-colors">
-            About
-          </Link>
+          <a href="/#product" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan transition-colors">
+            Shop
+          </a>
           <Link href="/cart" className="relative text-sm font-display uppercase tracking-wider text-gray-400 hover:text-foreground transition-colors">
             Cart
             {mounted && itemCount > 0 && (
@@ -79,11 +67,7 @@ export function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-3">
-          <Link href="/products/red" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-red">Red</Link>
-          <Link href="/products/blue" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan">Blue</Link>
-          <Link href="/products/bundle" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-purple">Bundle</Link>
-          <Link href="/blog" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">Blog</Link>
-          <Link href="/about" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">About</Link>
+          <a href="/#product" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan">Shop</a>
           <Link href="/cart" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">
             Cart {mounted && itemCount > 0 && `(${itemCount})`}
           </Link>

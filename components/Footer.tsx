@@ -10,7 +10,7 @@ export function Footer() {
           <div>
             <span className="font-display font-black text-2xl tracking-wider text-foreground">SWZZLE</span>
             <p className="text-gray-500 text-sm mt-2 font-body">
-              Science Wins. So Should You.
+              Upgrade the Hardware.
             </p>
             <p className="text-gray-600 text-xs mt-1 font-body">
               McConnelsville, Ohio
@@ -20,16 +20,12 @@ export function Footer() {
           {/* Shop */}
           <div className="space-y-2">
             <h4 className="font-display text-sm uppercase tracking-wider text-gray-400 mb-3">Shop</h4>
-            <Link href="/products/red" className="block text-sm text-gray-500 hover:text-neon-red transition-colors">Swzzle Red</Link>
-            <Link href="/products/blue" className="block text-sm text-gray-500 hover:text-neon-cyan transition-colors">Swzzle Blue</Link>
-            <Link href="/products/bundle" className="block text-sm text-gray-500 hover:text-foreground transition-colors">Bundle</Link>
+            <a href="/#product" className="block text-sm text-gray-500 hover:text-neon-cyan transition-colors">Swzzle Liniment Stick</a>
           </div>
 
-          {/* Company */}
+          {/* Account */}
           <div className="space-y-2">
-            <h4 className="font-display text-sm uppercase tracking-wider text-gray-400 mb-3">Company</h4>
-            <Link href="/about" className="block text-sm text-gray-500 hover:text-foreground transition-colors">About</Link>
-            <Link href="/blog" className="block text-sm text-gray-500 hover:text-foreground transition-colors">Blog</Link>
+            <h4 className="font-display text-sm uppercase tracking-wider text-gray-400 mb-3">Account</h4>
             <Link href="/account" className="block text-sm text-gray-500 hover:text-neon-cyan transition-colors">My Account</Link>
             <Link href="/cart" className="block text-sm text-gray-500 hover:text-foreground transition-colors">Cart</Link>
           </div>
