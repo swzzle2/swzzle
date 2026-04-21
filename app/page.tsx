@@ -75,6 +75,19 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ===== WORDMARK ===== */}
+      <section className="relative w-full px-4 pt-10 md:pt-14">
+        <div className="relative w-full max-w-4xl mx-auto aspect-[1920/600]">
+          <Image
+            src="/word%20mark%20swzzle.png"
+            alt="Swzzle"
+            fill
+            className="object-contain drop-shadow-[0_0_40px_rgba(0,229,255,0.35)]"
+            priority
+          />
+        </div>
+      </section>
+
       {/* ===== 1. HERO ===== */}
       <section id="product" className="relative flex flex-col items-center justify-center px-4 py-16 md:py-24 overflow-hidden">
         <StarField />
