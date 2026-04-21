@@ -21,9 +21,9 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="/#product" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan transition-colors">
-            Shop
-          </a>
+          <Link href="/product" className="text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan transition-colors">
+            Liniment Stick
+          </Link>
           <Link href="/cart" className="relative text-sm font-display uppercase tracking-wider text-gray-400 hover:text-foreground transition-colors">
             Cart
             {mounted && itemCount > 0 && (
@@ -67,7 +67,7 @@ export function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-3">
-          <a href="/#product" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan">Shop</a>
+          <Link href="/product" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400 hover:text-neon-cyan">Liniment Stick</Link>
           <Link href="/cart" onClick={() => setMenuOpen(false)} className="block text-sm font-display uppercase tracking-wider text-gray-400">
             Cart {mounted && itemCount > 0 && `(${itemCount})`}
           </Link>

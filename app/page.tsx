@@ -19,6 +19,7 @@ const fullStack = [
       { name: 'Fractionated Coconut Oil', detail: 'The getaway driver. Liquid at room temperature, invisible on skin, and already three layers deep by the time you remember to wash your hands.' },
       { name: 'Castor Oil', detail: "The frickin' delivery truck. Ricinoleic acid doesn't knock on the door. It moves in." },
       { name: "Apricot Kernel Oil", detail: "The only gentleman in the formula. Keeps everything gliding smooth so your application doesn't turn into a crime scene." },
+      { name: 'Vitamin E Oil (Tocopherol)', detail: "So your skin doesn't file a formal complaint after the third application this week." },
     ],
   },
   {
@@ -27,8 +28,8 @@ const fullStack = [
     borderColor: 'border-neon-purple/30',
     glowColor: 'shadow-[0_0_20px_rgba(182,0,255,0.1)]',
     items: [
+      { name: 'Oil of Wintergreen', detail: "The headliner. Every other ingredient is opening for this one. Goes on clean, sinks in loud, and introduces itself to every nerve ending on the way down." },
       { name: 'Menthol Crystals', detail: "Hits first. Asks questions never. You'll know it's working approximately four seconds before you're ready for it." },
-      { name: 'Vitamin E Oil (Tocopherol)', detail: "So your skin doesn't file a formal complaint after the third application this week." },
     ],
   },
   {
@@ -41,7 +42,6 @@ const fullStack = [
       { name: 'Eucalyptus Essential Oil', detail: 'The cool head in a very heated argument. Keeps the icy-hot-love-hate relationship balanced.' },
       { name: 'Peppermint Essential Oil', detail: 'The sharp one. Icy bite up front, slow burn behind it. Your nerve endings will have opinions.' },
       { name: 'Ginger Essential Oil', detail: 'Quiet warmth that builds in the background while everything else is making noise.' },
-      { name: 'Rosemary Essential Oil', detail: 'Backup doing real work while capsaicin and menthol take all the credit.' },
     ],
   },
   {
@@ -62,16 +62,22 @@ export default async function HomePage() {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground font-body overflow-x-hidden">
-      {/* ===== 1. HERO ===== */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20 overflow-hidden">
-        <StarField />
-
-        {/* Hero artwork placeholder */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-full h-full max-w-6xl mx-auto border-2 border-dashed border-border/40 bg-surface/30 flex items-center justify-center">
-            <span className="text-gray-600 font-display text-sm uppercase tracking-widest">HERO ARTWORK SLOT</span>
-          </div>
+      {/* ===== HEADER IMAGE ===== */}
+      <section className="relative w-full">
+        <div className="relative w-full aspect-[21/9] md:aspect-[3/1] overflow-hidden">
+          <Image
+            src="/header-image.png"
+            alt="Swzzle Liniment Stick"
+            fill
+            className="object-cover"
+            priority
+          />
         </div>
+      </section>
+
+      {/* ===== 1. HERO ===== */}
+      <section id="product" className="relative flex flex-col items-center justify-center px-4 py-16 md:py-24 overflow-hidden">
+        <StarField />
 
         <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto">
           {/* Product image */}
