@@ -11,6 +11,7 @@ type Product = {
   descriptor: string;
   price: number;
   status: 'active' | 'inactive';
+  mainPageDisplay?: boolean;
   shortDescription: string;
   longDescription: string;
   ingredients: string;
@@ -458,6 +459,23 @@ export default function ProductEditorPage() {
                   {product.status === 'active' ? 'ACTIVE' : 'INACTIVE'}
                 </button>
               </div>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={!!product.mainPageDisplay}
+                  onChange={(e) => updateField('mainPageDisplay', e.target.checked)}
+                  className="w-4 h-4 accent-neon-cyan"
+                />
+                <span className="text-sm font-display text-foreground/70 tracking-wider">
+                  MAIN PAGE DISPLAY
+                </span>
+                <span className="text-xs font-body text-foreground/40">
+                  — show this product on the home page
+                </span>
+              </label>
             </div>
 
             <div>

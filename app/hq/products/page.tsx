@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { isAuthenticated } from '@/lib/auth';
 import { readData } from '@/lib/data-store';
 import type { Product } from '@/lib/products';
+import { NewProductButton } from './NewProductButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +29,7 @@ export default async function ProductsPage() {
               PRODUCTS
             </h1>
           </div>
+          <NewProductButton />
         </div>
 
         <div className="bg-surface border border-border rounded-lg overflow-hidden">
@@ -42,6 +44,9 @@ export default async function ProductsPage() {
                 </th>
                 <th className="text-left p-4 font-display text-xs tracking-wider text-foreground/50">
                   STATUS
+                </th>
+                <th className="text-left p-4 font-display text-xs tracking-wider text-foreground/50">
+                  MAIN PAGE
                 </th>
                 <th className="text-right p-4 font-display text-xs tracking-wider text-foreground/50">
                   ACTIONS
@@ -70,6 +75,15 @@ export default async function ProductsPage() {
                     >
                       {product.status.toUpperCase()}
                     </span>
+                  </td>
+                  <td className="p-4">
+                    {product.mainPageDisplay ? (
+                      <span className="inline-block px-3 py-1 rounded-full text-xs font-display tracking-wider bg-neon-purple/10 text-neon-purple border border-neon-purple/30">
+                        &#9733; MAIN
+                      </span>
+                    ) : (
+                      <span className="text-foreground/30 text-xs font-body">—</span>
+                    )}
                   </td>
                   <td className="p-4 text-right">
                     <Link

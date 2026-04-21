@@ -6,6 +6,7 @@ export type Product = {
   descriptor: string;
   price: number;
   status: 'active' | 'inactive';
+  mainPageDisplay?: boolean;
   shortDescription: string;
   longDescription: string;
   ingredients: string;

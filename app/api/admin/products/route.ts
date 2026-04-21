@@ -87,6 +87,77 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(products);
 }
 
+function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'product';
+}
+
+export async function PUT(request: Request) {
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const products = await readData<Product[]>('products.json');
+
+    const baseSlug = slugify(body.name || 'new-product');
+    let id = baseSlug;
+    let n = 2;
+    while (products.some((p) => p.id === id)) {
+      id = `${baseSlug}-${n++}`;
+    }
+
+    const newProduct: Product = {
+      id,
+      name: body.name || 'New Product',
+      descriptor: body.descriptor || '',
+      price: typeof body.price === 'number' ? body.price : 0,
+      status: 'inactive',
+      mainPageDisplay: false,
+      shortDescription: body.shortDescription || '',
+      longDescription: body.longDescription || '',
+      ingredients: body.ingredients || '',
+      directions: body.directions || '',
+      warnings: body.warnings || '',
+      image: body.image || '',
+      images: [],
+      color: body.color || '#00E5FF',
+    };
+
+    products.push(newProduct);
+    await writeData('products.json', products);
+    return NextResponse.json({ success: true, product: newProduct });
+  } catch (error) {
+    console.error('Product create error:', error);
+    return NextResponse.json(
+      { error: `Create failed: ${error instanceof Error ? error.message : 'Unknown error'}` },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const id = request.nextUrl.searchParams.get('id');
+  if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+
+  const products = await readData<Product[]>('products.json');
+  const remaining = products.filter((p) => p.id !== id);
+  if (remaining.length === products.length) {
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+  }
+
+  await writeData('products.json', remaining);
+  return NextResponse.json({ success: true });
+}
+
 export async function POST(request: Request) {
   if (!(await isAuthenticated())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -103,6 +174,13 @@ export async function POST(request: Request) {
 
     // Merge updates
     products[index] = { ...products[index], ...updatedProduct };
+
+    // Enforce single main-page product: if this one is flagged, clear the flag on all others.
+    if (products[index].mainPageDisplay) {
+      products.forEach((p, i) => {
+        if (i !== index) p.mainPageDisplay = false;
+      });
+    }
 
     // Sync to Stripe
     try {

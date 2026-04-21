@@ -58,26 +58,16 @@ const fullStack = [
 
 export default async function HomePage() {
   const products = await readData<Product[]>('products.json');
-  const product = products.find((p) => p.status === 'active') || products[0];
+  const product =
+    products.find((p) => p.mainPageDisplay && p.status === 'active') ||
+    products.find((p) => p.status === 'active') ||
+    products[0];
 
   return (
     <div className="relative min-h-screen bg-background text-foreground font-body overflow-x-hidden">
-      {/* ===== HEADER IMAGE ===== */}
-      <section className="relative w-full">
-        <div className="relative w-full aspect-[21/9] md:aspect-[3/1] overflow-hidden">
-          <Image
-            src="/header-image.png"
-            alt="Swzzle Liniment Stick"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-      </section>
-
-      {/* ===== WORDMARK ===== */}
-      <section className="relative w-full px-4 pt-10 md:pt-14">
-        <div className="relative w-full max-w-4xl mx-auto aspect-[1920/600]">
+      {/* ===== WORDMARK (centered on initial viewport) ===== */}
+      <section className="relative w-full px-4 flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <div className="relative w-full max-w-5xl aspect-[1920/600]">
           <Image
             src="/word%20mark%20swzzle.png"
             alt="Swzzle"
@@ -92,15 +82,16 @@ export default async function HomePage() {
       <section id="product" className="relative flex flex-col items-center justify-center px-4 py-16 md:py-24 overflow-hidden">
         <StarField />
 
-        <div className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto">
+        <div className="relative z-10 flex flex-col items-center text-center max-w-5xl mx-auto">
           {/* Product image */}
-          <div className="relative w-40 h-40 md:w-56 md:h-56 mb-8">
+          <div className="relative w-[min(90vw,640px)] aspect-square mb-10">
             <Image
               src={product.image}
               alt={product.name}
               fill
-              className="object-contain drop-shadow-[0_0_40px_rgba(0,229,255,0.3)]"
+              className="object-contain drop-shadow-[0_0_60px_rgba(0,229,255,0.35)]"
               priority
+              sizes="(max-width: 768px) 90vw, 640px"
             />
           </div>
 
